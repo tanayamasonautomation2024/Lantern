@@ -1,0 +1,23 @@
+{
+  "create_account_header":"heading",
+  "create_account_dialog":"//p[@class='my-5 text-base']",
+  "create_account_firstname_textbox":"*First Name",
+  "create_accountLastname_id":"label[for='lastName']",
+  "create_account_email_textbox":"*Email Address",
+  "create_account_password_textbox":"input#password",
+  "create_account_password_info":"Help information",
+  "create_an_account_button":"Create Account",
+  "create_account_password_show_link":"Show",
+    "create_account_password_hide_link":"Hide",
+    "xpath_of_password_criteria1":"//section[text()='1 number']",
+    "keep_me_signed_in_checkox_xpath":"//button[@aria-label='send me email updates']",
+
+    "account_drawer_sign_in_button":"Sign In",
+    "account_drawer_create_an_account_button":"Create Account",
+    "account_drawer_credit_button":"My Stoneberry Credit",
+    "account_drawer_make_payment_button":"Make a Payment",
+    "account_drawer_order_link":"Order Status",
+    "account_drawer_wishlist_link":"Wish List",
+    "account_drawer_needHelp_link":"Need Help?",
+    "account_drawer_header": "Welcome!"
+}
