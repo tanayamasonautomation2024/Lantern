@@ -1,4 +1,6 @@
 import { expect } from '@playwright/test';
+import testData from '../test_data/signup.json';
+
 export class SignupPage {
   constructor(page) {
     this.page = page;
@@ -13,7 +15,7 @@ export class SignupPage {
     this.confirmPasswordInput = page.locator('input[name="ConfirmPassword"]');
     this.termsCheckbox = page.locator('input[type="checkbox"]');
     this.createAccountButton = page.locator('button[type="submit"]');
-    this.successMessage = page.locator('text=Your account has been created.');
+    this.successMessage = page.locator(testData.successMessage);
 
     this.testEmail = `automation${Math.floor(Math.random() * 1000) + 1}@lantern.throwemails.com`;
   }

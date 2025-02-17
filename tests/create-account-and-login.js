@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'; 
-import { SignupPage } from '../pages/SignupPage';
-import { MailinatorPage } from '../pages/MailinatorPage';
-import { LoginPage } from '../pages/LoginPage';
+import { SignupPage } from '../pages/signup-page';
+import { MailinatorPage } from '../pages/mailinator-page';
+import { LoginPage } from '../pages/login-page';
 import fs from 'fs';
 require('dotenv').config();
 

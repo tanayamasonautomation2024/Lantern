@@ -1,4 +1,6 @@
 import { expect } from '@playwright/test';
+import testData from '../test_data/login.json';
+
 export class LoginPage {
   constructor(page) {
     this.page = page;
@@ -6,11 +8,11 @@ export class LoginPage {
     this.emailInput = page.locator('input[name="UserEmail"]');
     this.passwordInput = page.getByRole('textbox', { name: 'Password' });
     this.signInButton = page.locator('button.createBtn');
-    this.otpInput = page.locator('input[name="UserOTP"]');  // OTP input field
-    this.submitButton = page.locator('button[type="submit"].btn');  // Submit button after OTP input
+    this.otpInput = page.locator('input[name="UserOTP"]'); 
+    this.submitButton = page.locator('button[type="submit"].btn');
     this.lanternOtpPageUrl = '';
     this.popupLocator = page.locator('.claim-eula-popup');
-    this.successMessage = page.locator('text=Welcome to Lantern by Labaton!');
+    this.successMessage = page.locator(testData.successMessage);
     this.agreeButton = page.locator('button.btn', { hasText: "Ok, I agree" })
     this.claimBox = page.locator('.claimBox');
   }
@@ -22,7 +24,7 @@ export class LoginPage {
   async signin(email, password) {
     await this.page.waitForLoadState('domcontentloaded');
     try {
-      await this.page.waitForSelector('#onetrust-accept-btn-handler', { timeout: 5000 });
+      await this.acceptButton.waitFor({ state: 'visible', timeout: 5000 });
       if (await this.acceptButton.isVisible()) {
         await this.acceptButton.click();
       }
@@ -48,7 +50,7 @@ export class LoginPage {
   async submitOTP(otp) {
     await this.page.goto(this.lanternOtpPageUrl);
     try {
-      await this.page.waitForSelector('#onetrust-accept-btn-handler', { timeout: 5000 });
+      await this.acceptButton.waitFor({ state: 'visible', timeout: 5000 });
       if (await this.acceptButton.isVisible()) {
         await this.acceptButton.click();
       }

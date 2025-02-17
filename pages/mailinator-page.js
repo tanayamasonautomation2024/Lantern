@@ -1,30 +1,34 @@
 import { expect } from '@playwright/test';
+import testData from '../test_data/mailinator.json';
+
 export class MailinatorPage {
   constructor(page) {
     this.page = page;
+    this.mailinator_login = process.env.MAILINATOR_URL;
+    this.mailinator_inbox = process.env.MAILINATOR_INBOX_URL;
     this.usernameField = page.locator('input[placeholder="Email"]');
     this.passwordField = page.locator('input[placeholder="Password"]');
     this.loginButton = page.locator('text=Log in');
     this.searchInboxField = page.locator('input#inbox_field');
     this.goButton = page.locator('button.primary-btn');
-    this.emailLocatorVerification = page.locator('table tr').filter({ hasText: 'Welcome Email for Verification' });
-    this.emailLocatorOTP = page.locator('table tr').filter({ hasText: 'Your Requested One Time Passcode' });
+    this.emailLocatorVerification = page.locator(testData.emailLocatorVerification);
+    this.emailLocatorOTP = page.locator(testData.emailLocatorOTP);
     this.iframeSelector = 'iframe[name="html_msg_body"]';
     this.verifyLinkLocator = 'a:has-text("Verify my email")';
     this.otpLocator = page.locator('strong');
-    this.successMessage = page.locator('text=User account verified successfully');
+    this.successMessage = page.locator(testData.successMessage);
     this.signinButton = page.locator('a.btn.createBtn.reset');
   }
 
   async gotoLoginPage() {
-    await this.page.goto('https://www.mailinator.com/v4/login.jsp');
+    await this.page.goto(this.mailinator_login);
   }
 
   async login(username, password) {
     await this.usernameField.fill(username);
     await this.passwordField.fill(password);
     await this.loginButton.click();
-    await expect(this.page).toHaveURL('https://www.mailinator.com/v4/private/inboxes.jsp');
+    await expect(this.page).toHaveURL(this.mailinator_inbox);
   }
 
   async searchEmail(testEmail) {

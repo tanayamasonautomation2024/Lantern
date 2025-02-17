@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { MailinatorPage } from '../pages/MailinatorPage';
-import { LoginPage } from '../pages/LoginPage';
+import { MailinatorPage } from '../pages/mailinator-page';
+import { LoginPage } from '../pages/login-page';
 require('dotenv').config();
 
 const mailnatorPassword = process.env.MAILINATOR_PASSWORD;
