@@ -24,7 +24,7 @@ export class LoginPage {
   async signin(email, password) {
     await this.page.waitForLoadState('domcontentloaded');
     try {
-      await this.acceptButton.waitFor({ state: 'visible', timeout: 5000 });
+      await this.acceptButton.waitFor({ state: 'visible', timeout: 15000 });
       if (await this.acceptButton.isVisible()) {
         await this.acceptButton.click();
       }
