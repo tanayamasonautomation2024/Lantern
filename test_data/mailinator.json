@@ -1,0 +1,5 @@
+{
+    "emailLocatorVerification": "table tr:has-text('Welcome Email for Verification')",
+    "emailLocatorOTP": "table tr:has-text('Your Requested One Time Passcode')",
+    "successMessage": "text=User account verified successfully"
+  }
