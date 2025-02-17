@@ -8,13 +8,21 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@playwright/test": "^1.50.0",
+    "@playwright/test": "^1.50.1",
     "@types/node": "^22.10.7",
     "allure-playwright": "^3.0.9",
     "playwright": "^1.49.1"
   },
   "dependencies": {
     "@faker-js/faker": "^9.4.0",
+    "csv-parse": "^5.6.0",
     "dotenv": "^16.4.7"
-  }
+  },
+  
+    "type": "module",
+    "experiments": {
+      "jsonModules": true
+    }
+  
+  
 }
