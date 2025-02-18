@@ -1,0 +1,16 @@
+{
+  "caseName": "samsung",
+  "firstName": "Automation",
+  "lastName": "User1",
+  "emailforqualified": "automatesttt0042lantern@throwemails.com",
+  "emailfordisqualified": "automatest042lantern@throwemails.com",
+  "phone": "(656) 565-5443",
+  "dropdownSelection_yes": "Yes",
+  "dropdownSelection_no": "No", 
+  "address":"illinois",
+  "autosuggestadd": "Illinois State UniversityNorth University Street, Normal, IL, USA",
+  "addressline1": "100 North University Street",
+  "city": "Normal",
+  "zip": "61761"
+  
+}

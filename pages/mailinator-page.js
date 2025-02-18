@@ -60,7 +60,7 @@ export class MailinatorPage {
   }
 
   async extractOTPFromIframe() {
-    const frame = await this.page.frameLocator('iframe[name="html_msg_body"]');
+    const frame = await this.page.frameLocator(this.iframeSelector);
     const otpLocator = frame.locator('h1 strong');
     await otpLocator.waitFor({ state: 'visible', timeout: 90000 });
 

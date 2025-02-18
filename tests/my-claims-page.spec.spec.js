@@ -35,4 +35,12 @@ test('Login, verify OTP, and check claimBox', async ({ page }) => {
     // Step 4: Check for claimBox under 'My ongoing claims'
     await loginPage.verifyRegisteredCase();
 });
-})
+// **After each test: log success or failure**
+test.afterEach(async ({ page }, testInfo) => {
+    if (testInfo.status === 'passed') {
+      console.log(`Test passed: ${testInfo.title}`);
+    } else if (testInfo.status === 'failed') {
+      console.log(`Test failed: ${testInfo.title}`);
+    }
+  });
+});
