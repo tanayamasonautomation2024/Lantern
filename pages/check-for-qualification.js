@@ -104,7 +104,7 @@ export class CasePage {
     // Fill in the first name and last name
     await this.firstNameInput.fill(firstName);
     await this.lastNameInput.fill(lastName);
-    await this.nextButton.click();
+    //await this.nextButton.click();
   }
 
  
@@ -116,7 +116,7 @@ export class CasePage {
     await this.page.getByText('Select CodeSelect CodeRemove').click();
     await this.page.getByText('+1', { exact: true }).click();
     await this.phoneInput.fill(phone);
-    await this.nextButton.click();
+   // await this.nextButton.click();
   }
 
   async fillAddress(address, autosuggestadd, addressline1, city, zip) {

@@ -1,9 +1,7 @@
 {
-  "caseName": "samsung",
+  "caseName": "Automation",
   "firstName": "Automation",
   "lastName": "User1",
-  "emailforqualified": "automatesttt0042lantern@throwemails.com",
-  "emailfordisqualified": "automatest042lantern@throwemails.com",
   "phone": "(656) 565-5443",
   "dropdownSelection_yes": "Yes",
   "dropdownSelection_no": "No", 
