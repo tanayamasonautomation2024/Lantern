@@ -1,7 +1,7 @@
 {
   "caseName": "Automation",
   "firstName": "Automation",
-  "lastName": "User1",
+  "lastName": "User",
   "phone": "(656) 565-5443",
   "dropdownSelection_yes": "Yes",
   "dropdownSelection_no": "No", 
@@ -9,6 +9,8 @@
   "autosuggestadd": "Illinois State UniversityNorth University Street, Normal, IL, USA",
   "addressline1": "100 North University Street",
   "city": "Normal",
-  "zip": "61761"
+  "zip": "61761",
+  "state":"Illinois",
+  "country":"US"
   
 }

@@ -17,7 +17,7 @@ export class SignupPage {
     this.createAccountButton = page.locator('button[type="submit"]');
     this.successMessage = page.locator(testData.successMessage);
 
-    this.testEmail = `automation${Math.floor(Math.random() * 1000) + 1}@lantern.throwemails.com`;
+    this.testEmail = `automation${Math.floor(Math.random() * 100000) + 1}@lantern.throwemails.com`;
   }
 
   async goto() {

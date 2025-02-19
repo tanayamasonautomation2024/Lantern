@@ -38,6 +38,10 @@ export class CasePage {
     await this.closeButton.click();
   }
 
+  async closeClaim(){
+    await this.closeButton.click();
+  }
+
   async searchAndOpenCase(caseName) {
     await expect(this.exploreCasesLink).toBeVisible();
     await this.exploreCasesLink.click();
@@ -117,6 +121,60 @@ export class CasePage {
     await this.page.getByText('+1', { exact: true }).click();
     await this.phoneInput.fill(phone);
    // await this.nextButton.click();
+  }
+
+  async fillDetailsForLoggedInUser(selectOption, phone){
+    await this.page.waitForTimeout(10000);
+
+
+    // Locate all dropdowns by their class
+  const dropdowns = await this.page.$$(this.dropdownfield);  // All dropdowns on the page
+
+  // Loop through each dropdown and interact with them
+  for (let dropdown of dropdowns) {
+    // Click the dropdown to expand the options
+    const dropdownControl = await dropdown.$('.form-control.ui.fluid.selection.dropdown');
+    if (dropdownControl) {
+      // Scroll the dropdown into view if it's not in the viewport
+      await dropdownControl.scrollIntoViewIfNeeded();
+
+      // Click to open the dropdown
+      await dropdownControl.click();
+    }
+
+    // Wait for the dropdown options to appear
+    const optionsList = await dropdown.$('.choices__list--dropdown');
+    
+    if (optionsList) {
+      // Scroll the options list into view
+      await optionsList.scrollIntoViewIfNeeded();
+      
+      // Find the option that matches the selectOption (e.g., "Yes" or "No")
+      const option = await optionsList.$(`.choices__item[data-value="${selectOption.toLowerCase()}"]`);
+      if (option) {
+         // Get the class attribute of the option
+         const classAttribute = await option.getAttribute('class');
+        
+         // Check if the 'is-selected' class is already present
+         const isSelected = classAttribute && classAttribute.includes('is-selected');
+        if (!isSelected) {
+          // Scroll the option into view if needed
+          await option.scrollIntoViewIfNeeded();
+          
+          // Click the option to select it
+          await option.click();
+        }
+      } else {
+        console.log(`Option "${selectOption}" not found in the dropdown.`);
+      }
+    } else {
+      console.log('No dropdown options found.');
+    }
+  }
+
+    await this.page.getByText('Select CodeSelect CodeRemove').click();
+    await this.page.getByText('+1', { exact: true }).click();
+    await this.phoneInput.fill(phone);
   }
 
   async fillAddress(address, autosuggestadd, addressline1, city, zip) {
