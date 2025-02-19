@@ -6,6 +6,7 @@ require('dotenv').config();
 const mailnatorPassword = process.env.MAILINATOR_PASSWORD;
 const mailinatorUsername = process.env.MAILINATOR_USERNAME;
 const lanternPassword = process.env.LANTERN_PASSWORD;
+const email = process.env.TEST_EMAIL;  
 
 test.describe("Lantern - Verify the registered case should display on My Claim page", () => {
     test.setTimeout(90000);
@@ -14,7 +15,7 @@ test('Login, verify OTP, and check claimBox', async ({ page }) => {
     const mailinator = new MailinatorPage(page);
     const loginPage = new LoginPage(page);
 
-    const email = "automation75@lantern.throwemails.com";  
+    
     console.log(`Logging in with email: ${email}`);
 
     // Step 1: Go to login page and enter credentials

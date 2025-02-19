@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { SignupPage } from '../pages/signup-page';
 import { MailinatorPage } from '../pages/mailinator-page';
 import { LoginPage } from '../pages/login-page';
+import {MyAccountPage} from '../pages/my-account-page'
 import fs from 'fs';
 require('dotenv').config();
 
@@ -13,39 +14,13 @@ const lanternPassword = process.env.LANTERN_PASSWORD;
 
 const create_data = JSON.parse(JSON.stringify(require('../test_data/login.json')));
 
-test.describe.serial("Lantern create account and login scenarios", () => {  
+test.describe("Lantern - My Account scenarios", () => {  
   test.setTimeout(120000);
 
-  // **Test 1: Sign up and store the generated email**
-  test('Sign up and create an account', async ({ page }) => {
-    const signupPage = new SignupPage(page);
-    const mailinator = new MailinatorPage(page);
-    await signupPage.goto();
-
-    const testEmail = signupPage.testEmail;  
-    console.log(`Generated Email: ${testEmail}`);
-
-    // **Write the email to a file**
-    try {
-      fs.writeFileSync(emailFilePath, testEmail);
-      console.log(`Test email saved to file: ${emailFilePath}`);
-    } catch (err) {
-      console.error('Error writing email to file:', err);
-      throw err;
-    }
-
-    await signupPage.fillSignupForm(create_data.fname, create_data.lname, lanternPassword);
-    await signupPage.submitForm();
-    await signupPage.verifySignupSuccess();
-    await mailinator.gotoLoginPage();
-    await mailinator.login(mailinatorUsername, mailnatorPassword);
-    await mailinator.searchEmail(testEmail);
-    await mailinator.openVerificationEmail();
-    await mailinator.clickVerificationLink();
-  });
+  
 
   // **Test 2: Retrieve stored email, verify account, and complete login**
-  test('Retrieve OTP and complete login', async ({ page }) => {
+  test('Check My Account page', async ({ page }) => {
     let testEmail;
 
     // **Ensure email file exists before proceeding**
@@ -64,6 +39,7 @@ test.describe.serial("Lantern create account and login scenarios", () => {
 
     const mailinator = new MailinatorPage(page);
     const loginPage = new LoginPage(page);
+    const accountPage = new MyAccountPage(page);
 
     console.log(`Logging in with email: ${testEmail}`);
 
@@ -79,6 +55,9 @@ test.describe.serial("Lantern create account and login scenarios", () => {
     console.log(`Extracted OTP: ${otp}`);
 
     await loginPage.submitOTP(otp);
+    await accountPage.goToMyAccount();
+    await accountPage.validateMyAccountSections();
+
   });
 
   // **After each test: log success or failure**

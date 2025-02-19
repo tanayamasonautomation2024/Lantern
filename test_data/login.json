@@ -1,3 +1,5 @@
 {
-    "successMessage": "text=Welcome to Lantern by Labaton!"
+    "successMessage": "text=Welcome to Lantern by Labaton!",
+    "fname": "Automation",
+    "lname":"User"
   }
