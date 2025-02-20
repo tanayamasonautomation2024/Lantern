@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import testData from '../test_data/login.json';
+import accountData from '../test_data/qualification_case_details.json'
 
 export class MyAccountPage {
   constructor(page) {
@@ -15,6 +16,12 @@ export class MyAccountPage {
     this.first_name=page.locator('input[name="FirstName"]');
     this.last_name=page.locator('input[name="LastName"]');
     this.edit_button=page.getByRole('button', { name: 'Edit' });
+    this.address_header=page.getByRole('heading', { name: 'Address Details' });
+    this.cancel_button=page.getByRole('button', { name: 'Cancel' });
+    this.save_button=page.getByRole('button', { name: 'Save' });
+    this.add_address_button=page.getByRole('button', { name: 'Add Address' });
+    this.details_saved_message=page.getByText('Your details have been');
+    this.primary_button_new=page.getByText('Primary').nth(1);
    
   }
 
@@ -33,7 +40,7 @@ export class MyAccountPage {
   }
 
   async validatePersonalDetails(fname,lname){
-    await (this.page.getByRole('button', { name: 'Edit' })).waitFor({state:'visible'});
+    await (this.edit_button).waitFor({state:'visible'});
     // Fetch the values from the input fields
     const firstName = await this.first_name.inputValue();
     const lastName = await this.last_name.inputValue();
@@ -50,7 +57,7 @@ export class MyAccountPage {
   }
 
   async validateAddressDetailSection(){
-    await (this.page.getByRole('heading', { name: 'Address Details' })).waitFor({state:'visible'});
+    await (this.address_header).waitFor({state:'visible'});
     await expect(this.edit_button).toBeVisible();
 
      // Extract the values from each input field
@@ -72,46 +79,40 @@ export class MyAccountPage {
     console.log('Country:', country);
 
     // Expected values (you would replace these with your own expected values)
-    const expectedStreetAddress1 = '100 North University Street';
-    const expectedStreetAddress2 = '';  // Street Address 2 is empty in the provided HTML
-    const expectedStreetAddress3 = 'Normal Township McLean County';
-    const expectedZipCode = '61761';
-    const expectedCity = 'Normal';
-    const expectedState = 'Illinois';
-    const expectedCountry = 'US'; // Expected country value
+   
 
     // Validate the values
-    expect(streetAddress1).toBe(expectedStreetAddress1);
-    expect(streetAddress2).toBe(expectedStreetAddress2);
-    expect(streetAddress3).toBe(expectedStreetAddress3);
-    expect(zipCode).toBe(expectedZipCode);
-    expect(city).toBe(expectedCity);
-    expect(state).toBe(expectedState);
-    expect(country).toBe(expectedCountry); // Validate country field
+    expect(streetAddress1).toBe(accountData.addressline1);
+    expect(streetAddress2).toBe(accountData.expectedStreetAddress2);
+    expect(streetAddress3).toBe(accountData.expectedStreetAddress3);
+    expect(zipCode).toBe(accountData.zip);
+    expect(city).toBe(accountData.city);
+    expect(state).toBe(accountData.state);
+    expect(country).toBe(accountData.country); // Validate country field
     
   }
 
   async clickEditAddressButton(){
     await this.edit_button.click();
-    await (this.page.getByRole('button', { name: 'Cancel' })).waitFor({state:'visible'});
-    await expect(this.page.getByRole('button', { name: 'Save' })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: 'Add Address' })).toBeVisible();
+    await (this.cancel_button).waitFor({state:'visible'});
+    await expect(this.save_button).toBeVisible();
+    await expect(this.add_address_button).toBeVisible();
   }
 
   async addNewAddress(){
-    await this.page.getByRole('button', { name: 'Add Address' }).click();
-    await expect(this.page.getByText('Primary').nth(1)).toBeVisible();
+    await this.add_address_button.click();
+    await expect(this.primary_button_new).toBeVisible();
     await this.page.locator('input[name="address\\.1\\.StreetAddress1"]').click();
-    await this.page.locator('input[name="address\\.1\\.StreetAddress1"]').fill('Street1');
+    await this.page.locator('input[name="address\\.1\\.StreetAddress1"]').fill(accountData.new_street1);
     await this.page.locator('input[name="address\\.1\\.StreetAddress2"]').click();
-    await this.page.locator('input[name="address\\.1\\.StreetAddress2"]').fill('Street2');
+    await this.page.locator('input[name="address\\.1\\.StreetAddress2"]').fill(accountData.new_street2);
     // await this.page.locator('div').filter({ hasText: /^Country$/ }).click();
     // await this.page.getByRole('listitem').filter({ hasText: /^US$/ }).click();
     await this.page.locator('input[name="address\\.1\\.PostCode"]').click();
-    await this.page.locator('input[name="address\\.1\\.PostCode"]').fill('12345');
-    await this.page.getByText('Primary').nth(1).click();
-    await this.page.getByRole('button', { name: 'Save' }).click();
-    await (this.page.getByText('Your details have been')).waitFor({state:'visible'});
+    await this.page.locator('input[name="address\\.1\\.PostCode"]').fill(accountData.new_zip);
+    await this.primary_button_new.click();
+    await this.save_button.click();
+    await (this.details_saved_message).waitFor({state:'visible'});
   }
 
 

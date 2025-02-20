@@ -11,6 +11,11 @@
   "city": "Normal",
   "zip": "61761",
   "state":"Illinois",
-  "country":"US"
+  "country":"US",
+  "expectedStreetAddress2" : "",
+  "expectedStreetAddress3" : "Normal Township McLean County",
+  "new_street1":"Street1",
+  "new_street2":"Street2",
+  "new_zip": "12345"
   
 }
