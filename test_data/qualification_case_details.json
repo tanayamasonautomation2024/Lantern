@@ -5,7 +5,7 @@
   "phone": "(656) 565-5443",
   "dropdownSelection_yes": "Yes",
   "dropdownSelection_no": "No", 
-  "address":"illinois",
+  "address":"illinois state University",
   "autosuggestadd": "Illinois State UniversityNorth University Street, Normal, IL, USA",
   "addressline1": "100 North University Street",
   "city": "Normal",
@@ -16,6 +16,10 @@
   "expectedStreetAddress3" : "Normal Township McLean County",
   "new_street1":"Street1",
   "new_street2":"Street2",
-  "new_zip": "12345"
+  "new_zip": "12345",
+
+  "expected_phone":"+16565655443",
+  "phoneType":"Home",
+  "expected_country_title":"United States"
   
 }

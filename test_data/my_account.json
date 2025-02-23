@@ -1,0 +1,40 @@
+{
+  "caseName": "Automation",
+  "firstName": "Automation",
+  "lastName": "User",
+  "phone": "(656) 565-5443",
+  "dropdownSelection_yes": "Yes",
+  "dropdownSelection_no": "No", 
+  "address":"illinois state University",
+  "autosuggestadd": "Illinois State UniversityNorth University Street, Normal, IL, USA",
+  "addressline1": "100 North University Street",
+  "city": "Normal",
+  "zip": "61761",
+  "state":"Illinois",
+  "country":"US",
+  "expectedStreetAddress2" : "",
+  "expectedStreetAddress3" : "Normal Township McLean County",
+  "new_street1":"Street1",
+  "new_street2":"Street2",
+  "new_zip": "12345",
+  "new_email": "automation_lanternbappa@lantern.throwemails.com",
+  "new_phone":"17890876555",
+
+  "expected_phone":"6565655443",
+  "phoneType":"Home",
+  "expected_country_title":"United States",
+  "notificationPreferences": [
+    "IndustryAlerts",
+    "MarketingEmails",
+    "Newsletter"
+  ],
+  "communicationPreferences": [
+    "Email",
+    "SMS"
+  ],
+  "editablePreferences": [
+    "Newsletter"
+  ],
+  "change_email_text":"If you change the primary Email address then your username will also change and next time you login you need to use the new primary email address after the verification, in case you are a social media user there won’t be any change in your login."
+  
+}

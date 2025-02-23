@@ -32,6 +32,7 @@ test('Login, verify OTP, and check claimBox', async ({ page }) => {
 
     // Step 3: Enter OTP and click Agree
     await loginPage.submitOTP(otp);
+    //await loginPage.validateEULAandlogin();
 
     // Step 4: Check for claimBox under 'My ongoing claims'
     await loginPage.verifyRegisteredCase();

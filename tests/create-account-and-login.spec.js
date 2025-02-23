@@ -79,6 +79,7 @@ test.describe.serial("Lantern create account and login scenarios", () => {
     console.log(`Extracted OTP: ${otp}`);
 
     await loginPage.submitOTP(otp);
+    
   });
 
   // **After each test: log success or failure**

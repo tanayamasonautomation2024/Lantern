@@ -4,8 +4,10 @@ import { MailinatorPage } from '../pages/mailinator-page';
 import { LoginPage } from '../pages/login-page';
 import {MyAccountPage} from '../pages/my-account-page'
 import { CasePage } from '../pages/check-for-qualification';
+import accountData from '../test_data/my_account.json'
 import fs from 'fs';
 require('dotenv').config();
+
 
 const emailFilePath = 'account-email.txt'; // File to store the generated email
 const mailnatorPassword = process.env.MAILINATOR_PASSWORD;
@@ -91,6 +93,7 @@ test.beforeEach(async ({ page }) => {
     console.log(`Extracted OTP: ${otp}`);
 
     await loginPage.submitOTP(otp);
+  
     const qualifiedCasePage = new CasePage(page);
     await qualifiedCasePage.searchAndOpenCase(testData.caseName);
     await qualifiedCasePage.startQualification();
@@ -106,6 +109,28 @@ test.beforeEach(async ({ page }) => {
     await accountPage.validateAddressDetailSection();
     await accountPage.clickEditAddressButton();
     await accountPage.addNewAddress();
+    await accountPage.clickPhoneNumber();
+    await accountPage.validatePhoneNumberSection();
+    await accountPage.addPhoneNumber();
+    await accountPage.clickEmailAddress();
+    await accountPage.validateEmailAddress(testEmail);
+    await accountPage.addNewEmail();
+    await mailinator.gotoLoginPage();
+    await mailinator.searchEmail(accountData.new_email);
+    await mailinator.openOTPEmail();
+    const otp2 = await mailinator.extractOTPFromIframe();
+    await accountPage.goToMyAccountLink();
+    await accountPage.clickEmailAddress();
+    await accountPage.addNewEmail();
+    await accountPage.submitOTP(otp2);
+    console.log(`Extracted OTP: ${otp2}`);
+    await accountPage.validateUpdatedEmailText();
+    await accountPage.clickNotificationPreferences();
+    await accountPage.validateNotificationPreferences();
+    await accountPage.validateNotificationPreferencesCheck();
+    await accountPage.validateCommunicationPreferences();
+    await accountPage.validateEditFeatureOfNotifications();
+    await accountPage.validateEmailCannotBeUnchecked();
 
   });
 

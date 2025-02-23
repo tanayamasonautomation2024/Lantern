@@ -66,6 +66,14 @@ export class LoginPage {
     console.log("Successfully logged in!");    
   }
 
+  async validateEULAandlogin(){
+    await this.popupLocator.waitFor({ state: 'visible', timeout: 10000 });
+    await expect(this.successMessage).toBeVisible({ timeout: 5000 });
+    
+    await this.agreeButton.click();
+    console.log("Successfully logged in!");  
+  }
+
   async verifyRegisteredCase() {
     await expect(this.claimBox.first()).toBeVisible();
     console.log("ClaimBox found under 'My ongoing claims'!");
