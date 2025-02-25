@@ -13,6 +13,7 @@ const emailFilePath = 'account-email.txt'; // File to store the generated email
 const mailnatorPassword = process.env.MAILINATOR_PASSWORD;
 const mailinatorUsername = process.env.MAILINATOR_USERNAME;
 const lanternPassword = process.env.LANTERN_PASSWORD;
+const new_email = `automation${Math.floor(Math.random() * 100000) + 1}@lantern.throwemails.com`;
 
 
 const create_data = JSON.parse(JSON.stringify(require('../test_data/login.json')));
@@ -114,14 +115,14 @@ test.beforeEach(async ({ page }) => {
     await accountPage.addPhoneNumber();
     await accountPage.clickEmailAddress();
     await accountPage.validateEmailAddress(testEmail);
-    await accountPage.addNewEmail();
+    await accountPage.addNewEmail(new_email);
     await mailinator.gotoLoginPage();
-    await mailinator.searchEmail(accountData.new_email);
+    await mailinator.searchEmail(new_email);
     await mailinator.openOTPEmail();
     const otp2 = await mailinator.extractOTPFromIframe();
     await accountPage.goToMyAccountLink();
     await accountPage.clickEmailAddress();
-    await accountPage.addNewEmail();
+    await accountPage.addNewEmail(new_email);
     await accountPage.submitOTP(otp2);
     console.log(`Extracted OTP: ${otp2}`);
     await accountPage.validateUpdatedEmailText();

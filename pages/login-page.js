@@ -15,8 +15,15 @@ export class LoginPage {
     this.successMessage = page.locator(testData.successMessage);
     this.agreeButton = page.locator('button.btn', { hasText: "Ok, I agree" })
     this.claimBox = page.locator('.claimBox');
+    this.cookieBanner = page.locator('.onetrust-pc-dark-filter');
+    this.closeButton = page.getByRole('button', { name: 'Close' });
   }
 
+  async closeCookieBanner() {
+    await expect(this.cookieBanner).toBeVisible({ timeout: 5000 });
+    await this.cookieBanner.click();
+    await this.closeButton.click();
+  }
   async goto() {
     await this.page.goto(process.env.LANTERN_SIGNIN_URL); 
   }

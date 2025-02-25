@@ -61,8 +61,8 @@ export default defineConfig({
     {
       name: 'Lantern',
       use: {
-        ...devices['Desktop Chrome'],
-        channel: 'chromium',
+        ...devices['Desktop Edge'],
+        //channel: 'chromium',
         //viewport: { width: 1920, height: 1080 },
         // launchOptions: {
         // args: ['--start-maximized']}

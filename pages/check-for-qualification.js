@@ -115,12 +115,12 @@ export class CasePage {
 
   async fillContactInfo(email, phone) {
     //this.testEmail = `automation${Math.floor(Math.random() * 1000) + 1}@lantern.throwemails.com`;
-    const testemail = `automation${Math.floor(Math.random() * 1000) + 1}@lantern.throwemails.com`;
+    const testemail = `automation_qual${Math.floor(Math.random() * 100000) + 1}@lantern.throwemails.com`;
     await this.emailInput.fill(testemail);
     await this.page.getByText('Select CodeSelect CodeRemove').click();
     await this.page.getByText('+1', { exact: true }).click();
     await this.phoneInput.fill(phone);
-   // await this.nextButton.click();
+    return testemail;
   }
 
   async fillDetailsForLoggedInUser(selectOption, phone){

@@ -187,14 +187,14 @@ async validateEmailAddress(expected_email){
    expect(emailAddress).toBe(expected_email); 
 }
 
-async addNewEmail(){
+async addNewEmail(new_email){
   await this.edit_button.click();
   await expect(this.cancel_button).toBeVisible();
   await expect(this.save_button).toBeVisible();
   await expect(this.add_email_button).toBeVisible();  
   await this.add_email_button.click();
   await this.enter_email_textbox.click();
-  await this.enter_email_textbox.fill(accountData.new_email);
+  await this.enter_email_textbox.fill(new_email);
   await this.save_button.click();
   this.otpPageUrl = this.page.url();
   console.log(this.otpPageUrl);

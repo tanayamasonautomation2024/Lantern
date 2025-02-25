@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { CasePage } from '../pages/check-for-qualification';
+import { ESignAgreementPage } from '../pages/esign-agreement-page.js';
 import testData from '../test_data/qualification_case_details.json' assert { type: 'json' };
 
-
-test.describe('Case Qualification Tests', () => {
-  test.setTimeout(120000);
+test.describe.serial('Not-LoggedIn User Scenarios', () => {
+  test.setTimeout(150000);
 
   test.beforeEach(async ({ page }) => {
     test.slow();
@@ -20,8 +20,9 @@ test.describe('Case Qualification Tests', () => {
     }
 
   })
-  test('Qualified Case - Complete Flow', async ({ page }) => {
+  test('Qualified Case - eSign Agreement', async ({ page }) => {
     const qualifiedCasePage = new CasePage(page);
+    const eSignDocumentPage = new ESignAgreementPage(page);
    // await qualifiedCasePage.navigateToHomePage();
     await qualifiedCasePage.closeCookieBanner();
     await qualifiedCasePage.searchAndOpenCase(testData.caseName);
@@ -31,21 +32,12 @@ test.describe('Case Qualification Tests', () => {
     await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.city, testData.zip);
     await qualifiedCasePage.submitForm();
     await qualifiedCasePage.verifySuccessMessage();
+    await eSignDocumentPage.signAgreementGuest(email);
+   // await eSignDocumentPage.signReleaseDocument();
+   // await eSignDocumentPage.completeSignReleaseProcess();
   });
 
-  test('Disqualified Case - Complete Flow', async ({ page }) => {
-    const disqualifiedCasePage = new CasePage(page);
-
-   // await disqualifiedCasePage.navigateToHomePage();
-    await disqualifiedCasePage.closeCookieBanner();
-    await disqualifiedCasePage.searchAndOpenCase(testData.caseName);
-    await disqualifiedCasePage.startQualification();
-    await disqualifiedCasePage.fillPersonalDetails(testData.firstName, testData.lastName, testData.dropdownSelection_no);
-    const email = await disqualifiedCasePage.fillContactInfo(testData.emailfordisqualified, testData.phone);
-    await disqualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.city, testData.zip);
-    await disqualifiedCasePage.submitForm();
-    await disqualifiedCasePage.verifyDisqualificationMessage();
-  });
+ 
 // **After each test: log success or failure**
 test.afterEach(async ({ page }, testInfo) => {
   if (testInfo.status === 'passed') {

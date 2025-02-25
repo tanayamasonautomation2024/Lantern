@@ -35,6 +35,8 @@
   "editablePreferences": [
     "Newsletter"
   ],
-  "change_email_text":"If you change the primary Email address then your username will also change and next time you login you need to use the new primary email address after the verification, in case you are a social media user there won’t be any change in your login."
+  "replace_value":"#recipient:Encrypted_Claimant_Token_Id#",
+  "change_email_text":"If you change the primary Email address then your username will also change and next time you login you need to use the new primary email address after the verification, in case you are a social media user there won’t be any change in your login.",
+  "reminderLink": "https://qa-fe.lks-eng.com/dashboard/reminder-link?key=#recipient:Encrypted_Claimant_Token_Id#|jsImpanJXn5uhjhwDLt5fw%3d%3d"
   
 }
