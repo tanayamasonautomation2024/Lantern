@@ -18,9 +18,7 @@ export class DownloadAndVerifyPDF {
         this.downloadsDir = path.join(process.cwd(), 'downloads');
     }
 
-    async downloadEsignedAgreements() {
-        await this.page.waitForLoadState('networkidle');
-    
+    async downloadSignedReleaseAgreement() {
         try {
             await this.acceptButton.waitFor({ state: 'visible', timeout: 5000 });
             if (await this.acceptButton.isVisible()) {
@@ -39,38 +37,51 @@ export class DownloadAndVerifyPDF {
             fs.mkdirSync(this.downloadsDir, { recursive: true });
         }
     
-        // **Download Signed Release Agreement**
-        let downloadPromise = this.page.waitForEvent('download');
+        console.log(`📥 Waiting for Signed Release Agreement download event...`);
+        const downloadPromise = this.page.waitForEvent('download');
     
+        await this.viewEsignAgreementButton.waitFor({ state: 'visible' });
         await this.viewEsignAgreementButton.click();
-        console.log(`Clicked View E-sign Agreement.`);
+        console.log(`📥 Clicked View E-sign Agreement.`);
     
-        let download = await downloadPromise;
+        const download = await downloadPromise;
         const releasePath = path.join(this.downloadsDir, 'signed_release_agreement.pdf');
         await download.saveAs(releasePath);
-        console.log(`Signed Release Agreement downloaded: ${releasePath}`);
+        console.log(`✅ Signed Release Agreement downloaded: ${releasePath}`);
     
-        // **Download ACA Agreement**
+        return releasePath;
+    }
+    
+    async downloadACAgreement() {
+        if (!fs.existsSync(this.downloadsDir)) {
+            fs.mkdirSync(this.downloadsDir, { recursive: true });
+        }
+    
+        // **Navigate to ACA Agreement**
+        await this.defaultWorkflowButton.waitFor({ state: 'visible' });
         await this.defaultWorkflowButton.click();
+        await this.automationCaseAgreement.waitFor({ state: 'visible' });
         await this.automationCaseAgreement.click();
     
-        downloadPromise = this.page.waitForEvent('download');
+        console.log(`📥 Waiting for ACA Agreement download event...`);
+        const downloadPromise = this.page.waitForEvent('download');
+    
+        await this.viewEsignAgreementButton.waitFor({ state: 'visible' });
         await this.viewEsignAgreementButton.click();
-        download = await downloadPromise;
+        console.log(`📥 Clicked View E-sign Agreement.`);
+    
+        const download = await downloadPromise;
         const acaPath = path.join(this.downloadsDir, 'aca_agreement.pdf');
         await download.saveAs(acaPath);
-        console.log(`ACA Agreement downloaded: ${acaPath}`);
+        console.log(`✅ ACA Agreement downloaded: ${acaPath}`);
     
-        return { releasePath, acaPath };
-    }        
-
-    async verifyPDF(pdfPath, pdfName, testEmail) {
+        return acaPath;
+    }    
+    
+    async verifyPDF(pdfPath) {
         try {
-            console.log(`Verifying ${pdfName}: ${pdfPath}`);
-    
-            if (!fs.existsSync(pdfPath)) {
-                console.error(`${pdfName} file does not exist: ${pdfPath}`);
-                throw new Error(`${pdfName} not found.`);
+            if (!pdfPath) {
+                throw new Error('⚠️ PDF path is undefined or missing.');
             }
     
             const pdfBuffer = fs.readFileSync(pdfPath);
@@ -79,55 +90,44 @@ export class DownloadAndVerifyPDF {
     
             const testData = JSON.parse(fs.readFileSync(path.join(__dirname, '../test_data/login.json')));
             const fullName = `${testData.fname} ${testData.lname}`;
+            const email = fs.readFileSync('test-email.txt', 'utf-8').trim();
     
-            console.log(`Checking Full Name: ${fullName}`);
-            console.log(`Checking Email: ${testEmail}`);
-    
-            // Count occurrences of Full Name
-            const fullNameMatches = (pdfText.match(new RegExp(fullName, 'g')) || []).length;
-    
-            // Count occurrences of "Email:(testEmail)" in exact format
-            const formattedEmailMatches = (pdfText.match(new RegExp(`Email:\\s*${testEmail}`, 'g')) || []).length;
-    
-            // Count occurrences of testEmail appearing anywhere
-            const emailMatches = (pdfText.match(new RegExp(testEmail, 'g')) || []).length;
-    
-            // Count occurrences of different date formats (not unique)
             const today = new Date();
             const dateFormats = [
                 today.toLocaleDateString('en-US'), // MM/DD/YYYY
                 today.toISOString().split('T')[0], // YYYY-MM-DD
             ];
-            let dateCount = 0;
+            const dateCount = dateFormats.reduce((count, date) => count + (pdfText.match(new RegExp(date, 'g')) || []).length, 0);
     
-            dateFormats.forEach(format => {
-                const matches = pdfText.match(new RegExp(format, 'g')) || [];
-                dateCount += matches.length;
-            });
+            const fullNameMatches = (pdfText.match(new RegExp(fullName, 'g')) || []).length;
+            const emailExactMatches = (pdfText.match(new RegExp(`Email:${email}`, 'g')) || []).length;
+            const emailLooseMatches = (pdfText.match(new RegExp(email, 'g')) || []).length;
     
-            console.log(`${pdfName} - Full Name Count: ${fullNameMatches}`);
-            console.log(`${pdfName} - Formatted Email Count (Email: testEmail): ${formattedEmailMatches}`);
-            console.log(`${pdfName} - Email Occurrences: ${emailMatches}`);
-            console.log(`${pdfName} - Total Date Count: ${dateCount}`);
+            console.log(`🔍 Checking PDF: ${pdfPath}`);
+            console.log(`✅ Full Name Count: ${fullNameMatches}`);
+            console.log(`✅ Email (Exact - Email:testEmail) Count: ${emailExactMatches}`);
+            console.log(`✅ Email (Loose - testEmail appearing) Count: ${emailLooseMatches}`);
+            console.log(`✅ Date Count: ${dateCount}`);
     
-            if (pdfName === 'Signed Release Agreement') {
-                if (fullNameMatches === 10 && dateCount > 2 && formattedEmailMatches === 1) {
-                    console.log(`${pdfName} validation passed.`);
+            if (pdfPath.includes('signed_release_agreement.pdf')) {
+                console.log('🔹 Validating Signed Release Agreement...');
+                if (fullNameMatches === 10 && dateCount > 2 && emailExactMatches === 1) {
+                    console.log('✅ Signed Release Agreement validation passed.');
                     return true;
                 }
-            } else if (pdfName === 'ACA Agreement') {
-                if (fullNameMatches === 14 && dateCount > 3 && formattedEmailMatches === 1 && emailMatches > 1) {
-                    console.log(`${pdfName} validation passed.`);
+            } else if (pdfPath.includes('aca_agreement.pdf')) {
+                console.log('🔹 Validating ACA Agreement...');
+                if (fullNameMatches === 14 && dateCount > 3 && emailExactMatches === 1 && emailLooseMatches > 1) {
+                    console.log('✅ ACA Agreement validation passed.');
                     return true;
                 }
             }
     
-            console.error(`${pdfName} validation failed.`);
-            throw new Error(`${pdfName} content does not match expected values.`);
-    
+            console.error(`❌ Validation failed for: ${pdfPath}`);
+            throw new Error(`${pdfPath} content does not match expected values.`);
         } catch (error) {
-            console.error('Error while verifying PDFs:', error);
+            console.error('⚠️ Error while verifying PDF:', error);
             throw error;
         }
-    }     
+    }    
 }
