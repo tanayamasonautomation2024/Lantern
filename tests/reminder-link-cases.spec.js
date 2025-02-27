@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { ConnectToDBPage } from '../pages/reminder-link';
 import { CasePage } from '../pages/check-for-qualification';
+import { ESignAgreementPage } from '../pages/esign-agreement-page.js';
 import testData from '../test_data/qualification_case_details.json' assert { type: 'json' };
 
 test.describe('Reminder Link Test', () => {
@@ -29,7 +30,7 @@ test.describe('Reminder Link Test', () => {
   test('Connect To DB - Fetch Token and generate the Reminder link', async ({ page }) => {
     const db = new ConnectToDBPage(page);
     const qualifiedCasePage = new CasePage(page);
-      
+    const eSignDocumentPage = new ESignAgreementPage(page);
       // Store the email in the variable
     const email = await qualifiedCasePage.fillContactInfo(testData.emailforqualified, testData.phone);
 
@@ -43,6 +44,11 @@ test.describe('Reminder Link Test', () => {
     const reminder_link = await db.generateReminderLink(token);
     await page.goto(reminder_link);
     await qualifiedCasePage.closeCookieBanner();
+    await db.esignFromReminderLink(email);
+    await db.clickNextButton();
+    await db.fillCompanyName(email);
+    await db.clickSubmit();
+    await db.clickNextButton();
   });
 
   // After each test: log success or failure

@@ -110,7 +110,7 @@ export class ESignAgreementPage extends CasePage {
 
   async signAgreementGuest(email) {
     await this.continueButton.click();
-
+    await this.checkbox1.waitFor({state:'visible'});
     await this.checkbox1.click();
     await this.signatureField1.click();
     console.log(`Filling email field with: ${email}`);
@@ -130,6 +130,43 @@ export class ESignAgreementPage extends CasePage {
     await this.verifyClickButton.click();
     await this.page.locator('.card-box-container').scrollIntoViewIfNeeded();
     await this.viewClaimButton.click();
+    console.log('E-Signed agreement')
+  }
+
+  async esignFromReminderLink(email){
+    await this.eSignAgreementButton.click();
+    await this.checkbox1.waitFor({state:'visible'});
+    await this.checkbox1.click();
+    await this.signatureField1.click();
+    console.log(`Filling email field with: ${email}`);
+    await this.emailField.first().fill(email);
+
+    await this.signByTypingRadio.click();
+    await this.fontSelection.click();
+    await this.addSignatureButton.click();
+
+    await this.checkbox2.click();
+    await this.signatureField2.click();
+    await this.signByTypingRadio.click();
+    await this.fontSelection.click();
+    await this.addSignatureButton.click();
+
+    await this.signDocumentButton.click();
+    await this.verifyClickButton.click();
+    await this.page.locator('.card-box-container').scrollIntoViewIfNeeded();
+    await this.viewClaimButton.click();
+    const progressMessage = await this.page.locator('.e-sign-progress-msg');
+  
+    // Ensure the button is disabled
+    await expect(button).toHaveAttribute('disabled', ''); // Ensure the button is disabled
+    
+    // Ensure the "Your E-sign is in progress" message is visible
+    await expect(progressMessage).toBeVisible();
+     // Ensure the "Signed" status tag is visible
+    const signedStatus = this.page.locator('button.completed .status-tag.complete >> text=Signed');
+    
+    // Wait for the "Signed" status to appear
+    await (signedStatus).waitFor({state:'visible'});
     console.log('E-Signed agreement')
   }
 

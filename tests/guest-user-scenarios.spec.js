@@ -1,10 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, devices } from '@playwright/test';
 import { CasePage } from '../pages/check-for-qualification';
 import { ESignAgreementPage } from '../pages/esign-agreement-page.js';
 import testData from '../test_data/qualification_case_details.json' assert { type: 'json' };
 
 test.describe.serial('Not-LoggedIn User Scenarios', () => {
   test.setTimeout(150000);
+  // test.use({
+  //   ...devices['Desktop Edge'], // Use the predefined "Desktop Edge" configuration
+  //   channel: 'msedge',          // Ensure it's using the Microsoft Edge channel
+  // });
 
   test.beforeEach(async ({ page }) => {
     test.slow();
