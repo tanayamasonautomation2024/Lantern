@@ -1,1 +1,1 @@
-{"total":0,"items":[]}
+{"total":2,"items":[{"uid":"489460d786d67b8a6e5a217c4c103072","name":"Lantern Chrome Tests","statistic":{"failed":3,"broken":5,"skipped":3,"passed":0,"unknown":0,"total":11}},{"uid":"602756c9b7a645a296b69f702b39d7f6","name":"Edge Guest User Scenarios","statistic":{"failed":1,"broken":0,"skipped":0,"passed":0,"unknown":0,"total":1}}]}
