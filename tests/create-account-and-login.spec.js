@@ -10,6 +10,9 @@ const mailnatorPassword = process.env.MAILINATOR_PASSWORD;
 const mailinatorUsername = process.env.MAILINATOR_USERNAME;
 const lanternPassword = process.env.LANTERN_PASSWORD;
 
+
+const create_data = JSON.parse(JSON.stringify(require('../test_data/login.json')));
+
 test.describe.serial("Lantern create account and login scenarios", () => {  
   test.setTimeout(120000);
 
@@ -31,7 +34,7 @@ test.describe.serial("Lantern create account and login scenarios", () => {
       throw err;
     }
 
-    await signupPage.fillSignupForm('Test', 'User', lanternPassword);
+    await signupPage.fillSignupForm(create_data.fname, create_data.lname, lanternPassword);
     await signupPage.submitForm();
     await signupPage.verifySignupSuccess();
     await mailinator.gotoLoginPage();

@@ -11,12 +11,9 @@ export class CasePage {
     this.firstCaseLink = page.locator('section').locator('a').first();
     this.viewCaseButton = page.getByRole('link', { name: 'View case' });
     this.getStartedButton = page.getByRole('button', { name: 'Get Started' });
-    //this.dropdown1 = page.locator('.choices__item > span');
+
     this.dropdownfield = '.choices.form-group.formio-choices';
     this.disqualificationMessage = page.getByText('Unfortunately, you do not qualify for this claim');
-
-    //this.dropdown3 = page.locator('l-emev3h6-areYou18OrOlder');
-    //this.dropdown3 = page.locator('(//span[text()="Yes"])[3]');
     
     this.selectyes = page.getByRole('option', { name: 'Yes' }).locator('span');
     this.firstNameInput = page.getByRole('textbox', { name: 'First Name *' });
@@ -27,10 +24,6 @@ export class CasePage {
     this.addressInput = page.getByRole('textbox', { name: 'autocomplete' });
     this.submitButton = page.getByRole('button', { name: 'Submit' });
   }
-
-  // async navigateToHomePage() {
-  //   await this.page.goto('https://qa-fe.lks-eng.com/');
-  // }
 
   async closeCookieBanner() {
     await expect(this.cookieBanner).toBeVisible({ timeout: 5000 });
@@ -107,8 +100,6 @@ export class CasePage {
     //await this.nextButton.click();
   }
 
- 
-
   async fillContactInfo(email, phone) {
     //this.testEmail = `automation${Math.floor(Math.random() * 1000) + 1}@lantern.throwemails.com`;
     const testemail = `automation${Math.floor(Math.random() * 1000) + 1}@lantern.throwemails.com`;
@@ -145,9 +136,6 @@ export class CasePage {
     await expect(this.page.locator('div').filter({ hasText: /^Continue to e-sign agreement$/ })).toBeVisible();
     console.log("Passed");
   }
-
-
-
 
   async verifyDisqualificationMessage() {
    // await expect(this.page.locator('div').filter({ hasText: 'Unfortunately, you do not qualify for this claim' })).toBeVisible();

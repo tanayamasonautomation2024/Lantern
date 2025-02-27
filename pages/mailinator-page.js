@@ -24,6 +24,10 @@ export class MailinatorPage {
     await this.page.goto(this.mailinator_login);
   }
 
+  async gotoMailinatorInbox(){
+    await this.page.goto(this.mailinator_inbox);
+  }
+
   async login(username, password) {
     await this.usernameField.fill(username);
     await this.passwordField.fill(password);
@@ -54,7 +58,7 @@ export class MailinatorPage {
   }
 
   async openOTPEmail() {
-    await this.emailLocatorOTP.first().waitFor({ state: 'visible', timeout: 40000 });
+    //await this.emailLocatorOTP.first().waitFor({ state: 'visible', timeout: 40000 });
     await this.emailLocatorOTP.first().click();
     console.log('OTP email opened.');
   }
