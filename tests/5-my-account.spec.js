@@ -100,6 +100,7 @@ test.beforeEach(async ({ page }) => {
     await qualifiedCasePage.startQualification();
     await qualifiedCasePage.fillDetailsForLoggedInUser(testData.dropdownSelection_yes, testData.phone);
     await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.city, testData.zip);
+    await page.waitForTimeout(2000);
     await qualifiedCasePage.submitForm();
     await qualifiedCasePage.verifySuccessMessage();
     await qualifiedCasePage.closeClaim();

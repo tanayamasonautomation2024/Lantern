@@ -17,6 +17,13 @@ export class LoginPage {
     this.claimBox = page.locator('.claimBox');
     this.cookieBanner = page.locator('.onetrust-pc-dark-filter');
     this.closeButton = page.getByRole('button', { name: 'Close' });
+
+    // Reset Password Locators
+    this.newPasswordInput = page.getByRole('textbox', { name: 'New password', exact: true });
+    this.reenterPasswordInput = page.getByRole('textbox', { name: 're-enter new password' });
+    this.resetPasswordButton = page.getByRole('button', { name: 'Reset Password' });
+    this.passwordResetMessage = page.getByText('Your password has been reset.');
+    this.signInLink = page.getByRole('link', { name: 'Sign in' });
   }
 
   async closeCookieBanner() {
@@ -84,5 +91,26 @@ export class LoginPage {
   async verifyRegisteredCase() {
     await expect(this.claimBox.first()).toBeVisible();
     console.log("ClaimBox found under 'My ongoing claims'!");
+  }
+
+  async acceptCookieButton(){
+    try {
+        await this.acceptButton.waitFor({ state: 'visible', timeout: 5000 });
+        if (await this.acceptButton.isVisible()) {
+            await this.acceptButton.click();
+        }
+    } catch (error) {
+        console.log('Consent popup not found, continuing...');
+    }
+}
+
+  async resetPassword(newPassword) {
+    await this.newPasswordInput.click();
+    await this.newPasswordInput.fill(newPassword);
+    await this.reenterPasswordInput.click();
+    await this.reenterPasswordInput.fill(newPassword);
+    await this.resetPasswordButton.click();
+    await this.passwordResetMessage.click();
+    await this.signInLink.click();
   }
 }

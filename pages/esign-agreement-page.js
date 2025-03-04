@@ -169,9 +169,7 @@ export class ESignAgreementPage extends CasePage {
     await (signedStatus).waitFor({state:'visible'});
     console.log('E-Signed agreement')
   }
-
   
-
   async logout(){
     await this.page.locator('#header').getByRole('img').nth(1).click();
     await this.logoutLink.click();
@@ -182,8 +180,12 @@ export class ESignAgreementPage extends CasePage {
     await this.submitInfoLink.click();
   }
 
-  async signReleaseDocument() {
+  async clickReleaseButton(){
+    await this.releaseButton.waitFor({ state: 'visible' });
     await this.releaseButton.click();
+  }
+
+  async signReleaseDocument() {
     await this.eSignAgreementButton.click();
     await this.showButton.click();
 
@@ -202,7 +204,6 @@ export class ESignAgreementPage extends CasePage {
   }
 
   async completeSignReleaseProcess() {
-    await this.page.waitForLoadState('networkidle');
     try {
       await this.acceptButton.waitFor({ state: 'visible', timeout: 5000 });
       if (await this.acceptButton.isVisible()) {
@@ -222,8 +223,6 @@ export class ESignAgreementPage extends CasePage {
     } catch (error) {
       console.log('Consent popup not found, continuing...');
     }
-    await this.viewCaseDetailButton.waitFor({ state: 'visible' });
-    await this.viewCaseDetailButton.click();
     await this.releaseButton.click();
     await this.openCloseIcon.click();
     await this.viewEsignAgreementButton.click();

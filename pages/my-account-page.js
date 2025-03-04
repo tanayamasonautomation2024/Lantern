@@ -8,6 +8,7 @@ export class MyAccountPage {
   constructor(page) {
     this.page = page;
     this.my_account_link=page.getByRole('link', { name: 'My Account' });
+    this.my_claim_link=page.getByRole('link', { name: 'My Claims' });
     this.personal_details_button=page.getByRole('button', { name: 'Personal Details' });
     this.address_details_button=page.getByRole('button', { name: 'Address Details' });
     this.phone_numbers_button=page.getByRole('button', { name: 'Phone Numbers' });
@@ -49,6 +50,11 @@ export class MyAccountPage {
   async goToMyAccount(){
     await this.page.locator('#header').getByRole('img').nth(1).click();
     await this.my_account_link.click()
+  }
+
+  async goToMyClaim(){
+    await this.page.locator('#header').getByRole('img').nth(1).click();
+    await this.my_claim_link.click()
   }
 
   async validateMyAccountSections(){

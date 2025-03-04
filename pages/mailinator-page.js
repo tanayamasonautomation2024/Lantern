@@ -18,6 +18,9 @@ export class MailinatorPage {
     this.otpLocator = page.locator('strong');
     this.successMessage = page.locator(testData.successMessage);
     this.signinButton = page.locator('a.btn.createBtn.reset');
+
+    this.resetPasswordLocator = page.locator(testData.resetPassword);
+    this.resetLink = 'a:has-text("click here")';
   }
 
   async gotoLoginPage() {
@@ -71,5 +74,19 @@ export class MailinatorPage {
     const otpText = await otpLocator.innerText();
     const otp = otpText.match(/\d{6}/);
     return otp[0];
+  }
+
+  async resetPasswordEmail() {
+    await this.resetPasswordLocator.first().waitFor({ state: 'visible', timeout: 40000 });
+    await this.resetPasswordLocator.first().click();
+
+    const iframe = this.page.frameLocator(this.iframeSelector);
+    await iframe.locator(this.resetLink).waitFor({ state: 'visible', timeout: 40000 });
+
+    const resetLink = await iframe.locator(this.resetLink).getAttribute('href');
+    if (!resetLink) throw new Error('Reset password link not found!');
+
+    await this.page.goto(resetLink);
+    console.log('Navigated to reset password page.');
   }
 }

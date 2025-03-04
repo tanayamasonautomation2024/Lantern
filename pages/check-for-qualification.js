@@ -191,7 +191,7 @@ export class CasePage {
   }
 
   async verifySuccessMessage() {
-    await expect(this.page.locator('div').filter({ hasText: /^Continue to e-sign agreement$/ })).toBeVisible();
+    await (this.page.locator('div').filter({ hasText: /^Continue to e-sign agreement$/ })).waitFor({state:'visible'});
     console.log("Passed");
   }
 

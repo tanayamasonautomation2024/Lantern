@@ -32,7 +32,13 @@ export class ConnectToDBPage {
     this.signDocumentButton = page.getByRole('button', { name: 'Sign document' });
     this.verifyClickButton = page.locator('#verify-click').getByRole('button', { name: 'Sign document' });
     this.company_name = page.locator('input[name="data[whatIsYourCompanyName]"]');
+    this.viewCaseDetailButton=page.locator('a.btn.outline:has-text("View Case Detail")');
   }
+
+  async viewCaseDetail() {
+    await this.viewCaseDetailButton.waitFor({ state: 'visible' });
+    await this.viewCaseDetailButton.click();
+}
 
   // Async method to connect to DB and fetch claimantToken
   async connectToDB(email) {

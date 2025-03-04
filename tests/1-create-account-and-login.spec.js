@@ -5,7 +5,7 @@ import { LoginPage } from '../pages/login-page';
 import fs from 'fs';
 require('dotenv').config();
 
-const emailFilePath = 'test-email.txt'; // File to store the generated email
+const emailFilePath = 'create-email.txt'; // File to store the generated email
 const mailnatorPassword = process.env.MAILINATOR_PASSWORD;
 const mailinatorUsername = process.env.MAILINATOR_USERNAME;
 const lanternPassword = process.env.LANTERN_PASSWORD;
