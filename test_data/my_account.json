@@ -1,5 +1,5 @@
 {
-  "caseName": "Automation",
+  "caseName": "Instagram",
   "firstName": "Automation",
   "lastName": "User",
   "phone": "(656) 565-5443",
@@ -17,7 +17,6 @@
   "new_street1":"Street1",
   "new_street2":"Street2",
   "new_zip": "12345",
-  "new_email": "automation_lanternbappa@lantern.throwemails.com",
   "new_phone":"17890876555",
 
   "expected_phone":"6565655443",

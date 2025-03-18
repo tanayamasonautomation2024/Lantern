@@ -1,0 +1,11 @@
+{
+    "primary_address": "100 North University Street, Normal Township McLean County, Normal, Illinois, US, 61761",
+    "secondary_address": "street1, street 2, street 3, Killeen, Texas, US, 76543",
+    "primary_phone": "(656) 565-5443",
+    "secondary_phone": "(789) 087-6555",
+    "Case_name": "Automation Case",
+    "Workflow_name": "Instagram Claim Start",
+    "Workflow_item_name": "Instagram Qualification Form",
+    "Status": ["Pending"],
+    "Tags": ["disqualified_7251390", "qualified_7251390", "Formsubmission_842532_7251390", "7251390_2718_842532_Rejected", "signup_complete", "7251390_2718_273937_Rejected", "ACAsigned_7251390", "7251390_2718_318705_Rejected"]
+}

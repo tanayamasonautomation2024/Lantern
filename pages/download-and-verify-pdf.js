@@ -200,6 +200,59 @@ export class DownloadAndVerifyPDF {
         }
     }
 
+    async verifyAdminPDF(pdfPath) {
+        try {
+            if (!pdfPath) {
+                throw new Error('PDF path is undefined or missing.');
+            }
+    
+            const pdfBuffer = fs.readFileSync(pdfPath);
+            const data = await pdfParse(pdfBuffer);
+            const pdfText = data.text;
+    
+            const testData = JSON.parse(fs.readFileSync(path.join(__dirname, '../test_data/login.json')));
+            const fullName = `${testData.fname} ${testData.lname}`;
+            const email = fs.readFileSync('test-email.txt', 'utf-8').trim();
+    
+            const today = new Date();
+            const dateFormats = [
+                today.toLocaleDateString('en-US'), // MM/DD/YYYY
+                today.toISOString().split('T')[0], // YYYY-MM-DD
+            ];
+            const dateCount = dateFormats.reduce((count, date) => count + (pdfText.match(new RegExp(date, 'g')) || []).length, 0);
+    
+            const fullNameMatches = (pdfText.match(new RegExp(fullName, 'g')) || []).length;
+            const emailExactMatches = (pdfText.match(new RegExp(`Email:${email}`, 'g')) || []).length;
+            const emailLooseMatches = (pdfText.match(new RegExp(email, 'g')) || []).length;
+    
+            console.log(`🔍 Checking PDF: ${pdfPath}`);
+            console.log(`Full Name Count: ${fullNameMatches}`);
+            console.log(`Email (Exact - Email:testEmail) Count: ${emailExactMatches}`);
+            console.log(`Email (Loose - testEmail appearing) Count: ${emailLooseMatches}`);
+            console.log(`Date Count: ${dateCount}`);
+    
+            if (pdfPath.includes('admin_release_agreement.pdf')) {
+                console.log('🔹 Validating Admin Signed Release Agreement...');
+                if (fullNameMatches === 10 && dateCount > 2 && emailExactMatches === 1) {
+                    console.log('✅ Admin Signed Release Agreement validation passed.');
+                    return true;
+                }
+            } else if (pdfPath.includes('admin_aca_agreement.pdf')) {
+                console.log('🔹 Validating Admin ACA Agreement...');
+                if (fullNameMatches === 14 && dateCount > 3 && emailExactMatches === 1 && emailLooseMatches > 1) {
+                    console.log('✅ Admin ACA Agreement validation passed.');
+                    return true;
+                }
+            }
+    
+            console.error(`❌ Validation failed for: ${pdfPath}`);
+            throw new Error(`${pdfPath} content does not match expected values.`);
+        } catch (error) {
+            console.error('Error while verifying Admin PDF:', error);
+            throw error;
+        }
+    }    
+
     async verifyPDFReminderLink(pdfPath,email) {
         try {
             if (!pdfPath) {

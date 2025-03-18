@@ -15,7 +15,9 @@
   },
   "dependencies": {
     "@faker-js/faker": "^9.4.0",
+    "adm-zip": "^0.5.16",
     "dotenv": "^16.4.7",
+    "file-saver": "^2.0.5",
     "mssql": "^11.0.1",
     "pdf-parse": "^1.1.1"
   }

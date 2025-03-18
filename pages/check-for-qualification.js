@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test';
+import fs from 'fs';
 import testData from '../test_data/qualification_case_details.json' assert { type: 'json' };
 
 export class CasePage {
@@ -11,16 +12,57 @@ export class CasePage {
     this.firstCaseLink = page.locator('section').locator('a').first();
     this.viewCaseButton = page.getByRole('link', { name: 'View case' });
     this.getStartedButton = page.getByRole('button', { name: 'Get Started' });
-    this.dropdownfield = '.choices.form-group.formio-choices';
+
+    //page1
+    // this.haveCreatedInstagram = page.getByLabel('Have you created an Instagram').locator('label').filter({ hasText: answer });
+    // this.haveUsedInstagram = page.getByLabel('Have you used Instagram since').locator('label').filter({ hasText: answer });
+    // this.haveExperiencedIssues = page.getByLabel('Have you ever experienced any').locator('label').filter({ hasText: answer });
+    this.dobMonth = page.locator('#whatIsYourDateOfBirth-month');
+    this.dobDay = page.locator('#whatIsYourDateOfBirth-day');
+    this.dobYear = page.locator('#whatIsYourDateOfBirth-year');
+    this.depressionCheckbox = page.locator('label').filter({ hasText: 'Depression' });
+    this.insomniaCheckbox = page.locator('label').filter({ hasText: 'Insomnia or other sleep' });
+    this.eatingDisordersCheckbox = page.locator('label').filter({ hasText: 'Eating disorders' });
+    this.treatedByMedical = page.getByLabel('Were you treated by a medical').locator('label').filter({ hasText: 'Yes' });
+    this.antiAnxietyMedication = page.getByText('Anti-anxiety medication');
+    this.antiDepressantMedication = page.getByText('Anti-depressant medication');
+    this.sleepMedication = page.getByText('Sleep medication');
     this.disqualificationMessage = page.getByText('Unfortunately, you do not qualify for this claim');
-    this.selectyes = page.getByRole('option', { name: 'Yes' }).locator('span');
+
+    this.nextButton = page.getByRole('button', { name: 'Next button. Click to go to' });
+
+    //page2
+    this.contactSection = page.locator('section').filter({ hasText: 'Contact' });
+
     this.firstNameInput = page.getByRole('textbox', { name: 'First Name *' });
     this.lastNameInput = page.getByRole('textbox', { name: 'Last Name *' });
-    this.nextButton = page.getByRole('button', { name: 'Next button' });
-    this.emailInput = page.getByRole('textbox', { name: 'Email *' });
-    this.phoneInput = page.getByRole('textbox', { name: 'Phone Number *' });
-    this.addressInput = page.getByRole('textbox', { name: 'autocomplete' });
-    this.submitButton = page.getByRole('button', { name: 'Submit' });
+    this.emailInput = page.getByRole('textbox', { name: 'What is the best email' });
+
+    this.emailConfirmationYes = page.getByLabel('Is the email address you just').locator('label').filter({ hasText: 'Yes' });
+
+    this.selectCodeDropdown = page.getByText('Select CodeSelect CodeRemove');
+    this.countryCodeUS = page.getByText('+1', { exact: true });
+
+    this.phoneNumberInput = page.getByRole('textbox', { name: 'Phone Number *' });
+    this.phoneConfirmationYes = page.getByLabel('Is the phone number you just').locator('label').filter({ hasText: 'Yes' });
+
+    //page3
+    this.autocompleteInput = page.getByRole('textbox', { name: 'autocomplete' });
+    // this.addressSelection = page.getByText(autosuggestadd);
+    this.addressLine1Input = page.getByRole('textbox', { name: 'AddressLine 1 *' });
+    this.addressLine3Input = page.getByRole('textbox', { name: 'AddressLine 3' });
+    this.cityInput = page.getByRole('textbox', { name: 'City *' });
+    this.stateSelection = page.getByText('<span>Illinois</span>IllinoisRemove item');
+    this.zipCodeInput = page.getByRole('textbox', { name: 'Zip Code *' });
+    this.instagramHandleInput = page.getByRole('textbox', { name: 'Please enter your Instagram' });
+    this.changedUsernameYes = page.getByLabel('Have you ever changed your').locator('label').filter({ hasText: 'Yes' });
+    this.changedUsernameNo = page.getByLabel('Have you ever changed your').locator('label').filter({ hasText: 'No' });
+    this.accountCreationMonth = page.locator('#whenDidYouCreateYourInstagramAccount-month');
+    this.accountCreationYear = page.locator('#whenDidYouCreateYourInstagramAccount-year');
+    this.stillUsingInstagramYes = page.getByLabel('Do you still use Instagram?').locator('label').filter({ hasText: 'Yes' });
+    this.stopUsingMonth = page.locator('#whenDidYouStopUsingInstagram-month');
+    this.stopUsingYear = page.locator('#whenDidYouStopUsingInstagram-year');
+    this.submitButton = page.getByRole('button', { name: 'Submit button. Click to' });
   }
 
   async closeCookieBanner() {
@@ -38,6 +80,7 @@ export class CasePage {
     await this.exploreCasesLink.click();
     await expect(this.searchBox).toBeVisible();
     await this.searchBox.type(caseName);
+    await this.firstCaseLink.waitFor({state:'visible'});
     await this.firstCaseLink.click();
   }
 
@@ -48,141 +91,102 @@ export class CasePage {
     await this.getStartedButton.click();
   }
 
-  async fillPersonalDetails(firstName, lastName,selectOption) {
-    await this.page.waitForTimeout(10000);
+  async qualifierQuestion(answer){
+    const haveCreatedInstagram = this.page.getByLabel('Have you created an Instagram')
+        .locator('label')
+        .filter({ hasText: answer });
 
+    const haveUsedInstagram = this.page.getByLabel('Have you used Instagram since')
+        .locator('label')
+        .filter({ hasText: answer });
 
-    // Locate all dropdowns by their class
-  const dropdowns = await this.page.$$(this.dropdownfield);  // All dropdowns on the page
-
-  // Loop through each dropdown and interact with them
-  for (let dropdown of dropdowns) {
-    // Click the dropdown to expand the options
-    const dropdownControl = await dropdown.$('.form-control.ui.fluid.selection.dropdown');
-    if (dropdownControl) {
-      // Scroll the dropdown into view if it's not in the viewport
-      await dropdownControl.scrollIntoViewIfNeeded();
-
-      // Click to open the dropdown
-      await dropdownControl.click();
-    }
-
-    // Wait for the dropdown options to appear
-    const optionsList = await dropdown.$('.choices__list--dropdown');
-    
-    if (optionsList) {
-      // Scroll the options list into view
-      await optionsList.scrollIntoViewIfNeeded();
-      
-      // Find the option that matches the selectOption (e.g., "Yes" or "No")
-      const option = await optionsList.$(`.choices__item[data-value="${selectOption.toLowerCase()}"]`);
-      if (option) {
-         // Get the class attribute of the option
-         const classAttribute = await option.getAttribute('class');
-        
-         // Check if the 'is-selected' class is already present
-         const isSelected = classAttribute && classAttribute.includes('is-selected');
-        if (!isSelected) {
-          // Scroll the option into view if needed
-          await option.scrollIntoViewIfNeeded();
-          
-          // Click the option to select it
-          await option.click();
-        }
-      } else {
-        console.log(`Option "${selectOption}" not found in the dropdown.`);
-      }
-    } else {
-      console.log('No dropdown options found.');
-    }
-  }
-    // Fill in the first name and last name
-    await this.firstNameInput.fill(firstName);
-    await this.lastNameInput.fill(lastName);
-    //await this.nextButton.click();
+    const haveExperiencedIssues = this.page.getByLabel('Have you ever experienced any')
+        .locator('label')
+        .filter({ hasText: answer });
+    await haveCreatedInstagram.waitFor({state:'visible'});
+    await haveCreatedInstagram.click();
+    await haveUsedInstagram.click();
+    await haveExperiencedIssues.click();
   }
 
- 
+  async fillSurvey(DOBday, DOBmonth, DOByear) {
+    await this.dobMonth.fill(DOBday);
+    await this.dobDay.fill(DOBmonth);
+    await this.dobYear.fill(DOByear);
+    await this.depressionCheckbox.click();
+    await this.insomniaCheckbox.click();
+    await this.eatingDisordersCheckbox.click();
+    await this.treatedByMedical.click();
+    await this.antiAnxietyMedication.click();
+    await this.antiDepressantMedication.click();
+    await this.sleepMedication.click();
+  }
 
-  async fillContactInfo(email, phone) {
-    //this.testEmail = `automation${Math.floor(Math.random() * 1000) + 1}@lantern.throwemails.com`;
+  async NextButton(){
+    await this.nextButton.click();
+  }
+
+  async fillContactDetails(firstname, lastname, phone) {
     const testemail = `automation_qual${Math.floor(Math.random() * 100000) + 1}@lantern.throwemails.com`;
+    // **Write the email to a file**
+    const newEmailFilePath = 'qualification-email.txt';
+      try {
+          fs.writeFileSync(newEmailFilePath, testemail);
+          console.log(`Email saved to file: ${newEmailFilePath}`);
+        } catch (err) {
+          console.error('Error writing email to file:', err);
+          throw err;
+        }
+
+    await this.contactSection.click();
+    await this.firstNameInput.fill(firstname);
+    await this.lastNameInput.fill(lastname);
     await this.emailInput.fill(testemail);
-    await this.page.getByText('Select CodeSelect CodeRemove').click();
-    await this.page.getByText('+1', { exact: true }).click();
-    await this.phoneInput.fill(phone);
+    await this.emailConfirmationYes.click();
+    await this.selectCodeDropdown.click();
+    await this.countryCodeUS.click();
+    await this.phoneNumberInput.fill(phone);
+    await this.phoneConfirmationYes.click();
     return testemail;
   }
 
-  async fillDetailsForLoggedInUser(selectOption, phone){
-    await this.page.waitForTimeout(10000);
-
-
-    // Locate all dropdowns by their class
-  const dropdowns = await this.page.$$(this.dropdownfield);  // All dropdowns on the page
-
-  // Loop through each dropdown and interact with them
-  for (let dropdown of dropdowns) {
-    // Click the dropdown to expand the options
-    const dropdownControl = await dropdown.$('.form-control.ui.fluid.selection.dropdown');
-    if (dropdownControl) {
-      // Scroll the dropdown into view if it's not in the viewport
-      await dropdownControl.scrollIntoViewIfNeeded();
-
-      // Click to open the dropdown
-      await dropdownControl.click();
-    }
-
-    // Wait for the dropdown options to appear
-    const optionsList = await dropdown.$('.choices__list--dropdown');
-    
-    if (optionsList) {
-      // Scroll the options list into view
-      await optionsList.scrollIntoViewIfNeeded();
-      
-      // Find the option that matches the selectOption (e.g., "Yes" or "No")
-      const option = await optionsList.$(`.choices__item[data-value="${selectOption.toLowerCase()}"]`);
-      if (option) {
-         // Get the class attribute of the option
-         const classAttribute = await option.getAttribute('class');
-        
-         // Check if the 'is-selected' class is already present
-         const isSelected = classAttribute && classAttribute.includes('is-selected');
-        if (!isSelected) {
-          // Scroll the option into view if needed
-          await option.scrollIntoViewIfNeeded();
-          
-          // Click the option to select it
-          await option.click();
-        }
-      } else {
-        console.log(`Option "${selectOption}" not found in the dropdown.`);
-      }
-    } else {
-      console.log('No dropdown options found.');
-    }
+  async fillAddress(address, autosuggestadd, addressline1, addressline3, city, zip) {
+    // Fill Address
+    await this.autocompleteInput.click();
+    await this.autocompleteInput.fill(address);
+    await this.page.getByText(autosuggestadd).click();
+    await this.addressLine1Input.fill(addressline1);
+    await this.addressLine3Input.fill(addressline3);
+    await this.cityInput.fill(city);
+    await this.zipCodeInput.fill(zip);
   }
 
-    await this.page.getByText('Select CodeSelect CodeRemove').click();
-    await this.page.getByText('+1', { exact: true }).click();
-    await this.phoneInput.fill(phone);
-  }
+  async fillAdditionalDetails(createdmonth, CreatedYear, endMonth, endYear) {
+    const emailFilePath = 'test-email.txt';
+    let email = '';
 
-  async fillAddress(address, autosuggestadd, addressline1, city, zip) {
-    await this.addressInput.click();
-    await this.addressInput.type(address, { delay: 100 });
+    try {
+        email = fs.readFileSync(emailFilePath, 'utf-8').trim();
+    } catch (err) {
+        console.error('Error reading email from file:', err);
+        throw err;
+    }
+    // Extract Instagram username from email
+    const emailPrefix = email.split('@')[0];  // Get the part before '@'
+    const instaUserName = emailPrefix.replace(/(\d+)/, '_$1'); // Insert '_' before numbers
 
-    // **Logging the test data manually (as requested)**
-    console.log("Loaded testData:", testData);
-    console.log("Autosuggest Address:", testData.autosuggestadd);
-
-    const addressSuggestion = this.page.getByText(autosuggestadd);
-    await addressSuggestion.waitFor({ state: 'visible', timeout: 5000 });
-    await addressSuggestion.click();
-
-    await this.page.getByRole('textbox', { name: 'AddressLine 1 *' }).fill(addressline1);
-    await this.page.getByRole('textbox', { name: 'City *' }).fill(city);
-    await this.page.getByRole('textbox', { name: 'Zip Code *' }).fill(zip);
+    // Fill Instagram handle
+    await this.instagramHandleInput.fill(instaUserName);
+    // Change Username Confirmation
+    await this.changedUsernameNo.click();
+    // Account Creation Date
+    await this.accountCreationMonth.fill(createdmonth);
+    await this.accountCreationYear.fill(CreatedYear);
+    // Still Using Instagram
+    await this.stillUsingInstagramYes.click();
+    // Stopped Using Instagram Date
+    await this.stopUsingMonth.fill(endMonth);
+    await this.stopUsingYear.fill(endYear);
   }
 
   async submitForm() {
@@ -195,12 +199,9 @@ export class CasePage {
     console.log("Passed");
   }
 
-
-
-
   async verifyDisqualificationMessage() {
-   // await expect(this.page.locator('div').filter({ hasText: 'Unfortunately, you do not qualify for this claim' })).toBeVisible();
-    await (this.disqualificationMessage).waitFor({state:'visible'});
-    console.log("Disqualification Passed");
-  }
+    // await expect(this.page.locator('div').filter({ hasText: 'Unfortunately, you do not qualify for this claim' })).toBeVisible();
+     await (this.disqualificationMessage).waitFor({state:'visible'});
+     console.log("Disqualification Passed");
+   }
 }

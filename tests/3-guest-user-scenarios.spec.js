@@ -34,9 +34,21 @@ test.describe.serial('Not-LoggedIn User Scenarios', () => {
     await qualifiedCasePage.closeCookieBanner();
     await qualifiedCasePage.searchAndOpenCase(testData.caseName);
     await qualifiedCasePage.startQualification();
-    await qualifiedCasePage.fillPersonalDetails(testData.firstName, testData.lastName, testData.dropdownSelection_yes);
-    email = await qualifiedCasePage.fillContactInfo(testData.emailforqualified, testData.phone);
-    await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.city, testData.zip);
+    await qualifiedCasePage.qualifierQuestion(testData.option1);
+   
+    // Fill survey details (Page 1)
+    await qualifiedCasePage.fillSurvey(testData.DOBday, testData.DOBmonth, testData.DOByear);
+    await qualifiedCasePage.NextButton();
+
+    // Fill contact details (Page 2)
+    email = await qualifiedCasePage.fillContactDetails(testData.firstName, testData.lastName, testData.phone);
+    await qualifiedCasePage.NextButton();
+
+    // Fill address details (Page 3)
+    await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.addresline3, testData.city, testData.zip);
+    
+    // Fill additional Instagram details
+    await qualifiedCasePage.fillAdditionalDetails(testData.createdMonth, testData.CreatedYear, testData.endMonth, testData.endYear);
     await qualifiedCasePage.submitForm();
     await qualifiedCasePage.verifySuccessMessage();
     await eSignDocumentPage.signAgreementGuest(email);
@@ -44,13 +56,13 @@ test.describe.serial('Not-LoggedIn User Scenarios', () => {
    // await eSignDocumentPage.completeSignReleaseProcess();
   });
 
-test.describe("Admin Scenario", () => {
-    test.use({ storageState: './adminUser1.json' });
-    test('Admin Scenario', async ({ page }) => {
-      await page.goto(process.env.LANTERN_ADMIN_URL);
-      await page.waitForTimeout(10000);
-    })
-    });
+// test.describe("Admin Scenario", () => {
+//     test.use({ storageState: './adminUser1.json' });
+//     test('Admin Scenario', async ({ page }) => {
+//       await page.goto(process.env.LANTERN_ADMIN_URL);
+//       await page.waitForTimeout(10000);
+//     })
+//     });
  
 // **After each test: log success or failure**
 test.afterEach(async ({ page }, testInfo) => {

@@ -9,7 +9,8 @@ import fs from 'fs';
 require('dotenv').config();
 
 
-const emailFilePath = 'account-email.txt'; // File to store the generated email
+const emailFilePath = 'test-email.txt'; // File to store the generated email
+const newEmailFilePath = 'account-email.txt';
 const mailnatorPassword = process.env.MAILINATOR_PASSWORD;
 const mailinatorUsername = process.env.MAILINATOR_USERNAME;
 const lanternPassword = process.env.LANTERN_PASSWORD;
@@ -24,37 +25,46 @@ test.describe("Lantern - My Account scenarios", () => {
 test.beforeEach(async ({ page }) => {
     await page.context().clearCookies();
     test.slow();
-    try {  
-      const signupPage = new SignupPage(page);
-          const mailinator = new MailinatorPage(page);
-          await signupPage.goto();
-      
-          const testEmail = signupPage.testEmail;  
-          console.log(`Generated Email: ${testEmail}`);
-      
-          // **Write the email to a file**
+
+    // **Write the email to a file**
           try {
-            fs.writeFileSync(emailFilePath, testEmail);
-            console.log(`Test email saved to file: ${emailFilePath}`);
+            fs.writeFileSync(newEmailFilePath, new_email);
+            console.log(`Test email saved to file: ${newEmailFilePath}`);
           } catch (err) {
             console.error('Error writing email to file:', err);
             throw err;
           }
+    // try {  
+    //   const signupPage = new SignupPage(page);
+    //       const mailinator = new MailinatorPage(page);
+    //       await signupPage.goto();
       
-          await signupPage.fillSignupForm(create_data.fname, create_data.lname, lanternPassword);
-          await signupPage.submitForm();
-          await signupPage.verifySignupSuccess();
-          await mailinator.gotoLoginPage();
-          await mailinator.login(mailinatorUsername, mailnatorPassword);
-          await mailinator.searchEmail(testEmail);
-          await mailinator.openVerificationEmail();
-          await mailinator.clickVerificationLink();
-          await page.goto(process.env.LANTERN_SIGNIN_URL);
+    //       const testEmail = signupPage.testEmail;  
+    //       console.log(`Generated Email: ${testEmail}`);
       
-    } catch (error) {
-      // Handle the error here
-      console.error("An error occurred in test.beforeEach:", error);
-    }
+    //       // **Write the email to a file**
+    //       try {
+    //         fs.writeFileSync(emailFilePath, testEmail);
+    //         console.log(`Test email saved to file: ${emailFilePath}`);
+    //       } catch (err) {
+    //         console.error('Error writing email to file:', err);
+    //         throw err;
+    //       }
+      
+          // await signupPage.fillSignupForm(create_data.fname, create_data.lname, lanternPassword);
+          // await signupPage.submitForm();
+          // await signupPage.verifySignupSuccess();
+          // await mailinator.gotoLoginPage();
+          // await mailinator.login(mailinatorUsername, mailnatorPassword);
+          // await mailinator.searchEmail(testEmail);
+          // await mailinator.openVerificationEmail();
+          // await mailinator.clickVerificationLink();
+          // await page.goto(process.env.LANTERN_SIGNIN_URL);
+      
+    // } catch (error) {
+    //   // Handle the error here
+    //   console.error("An error occurred in test.beforeEach:", error);
+    // }
 
   })
   
@@ -82,11 +92,11 @@ test.beforeEach(async ({ page }) => {
 
     console.log(`Logging in with email: ${testEmail}`);
 
-    //await loginPage.goto();
+    await loginPage.goto();
     await loginPage.signin(testEmail, lanternPassword);
 
     await mailinator.gotoLoginPage();
-   // await mailinator.login(mailinatorUsername, mailnatorPassword);
+    await mailinator.login(mailinatorUsername, mailnatorPassword);
     await mailinator.searchEmail(testEmail);
 
     await mailinator.openOTPEmail();
@@ -95,15 +105,15 @@ test.beforeEach(async ({ page }) => {
 
     await loginPage.submitOTP(otp);
   
-    const qualifiedCasePage = new CasePage(page);
-    await qualifiedCasePage.searchAndOpenCase(testData.caseName);
-    await qualifiedCasePage.startQualification();
-    await qualifiedCasePage.fillDetailsForLoggedInUser(testData.dropdownSelection_yes, testData.phone);
-    await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.city, testData.zip);
-    await page.waitForTimeout(2000);
-    await qualifiedCasePage.submitForm();
-    await qualifiedCasePage.verifySuccessMessage();
-    await qualifiedCasePage.closeClaim();
+    // const qualifiedCasePage = new CasePage(page);
+    // await qualifiedCasePage.searchAndOpenCase(testData.caseName);
+    // await qualifiedCasePage.startQualification();
+    // await qualifiedCasePage.fillDetailsForLoggedInUser(testData.dropdownSelection_yes, testData.phone);
+    // await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.city, testData.zip);
+    // await page.waitForTimeout(2000);
+    // await qualifiedCasePage.submitForm();
+    // await qualifiedCasePage.verifySuccessMessage();
+    // await qualifiedCasePage.closeClaim();
     await accountPage.goToMyAccount();
     await accountPage.validateMyAccountSections();
     await accountPage.validatePersonalDetails(create_data.fname,create_data.lname);

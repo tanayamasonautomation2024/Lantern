@@ -22,13 +22,24 @@ test.describe('Case Qualification Tests', () => {
   })
   test('Qualified Case - Complete Flow', async ({ page }) => {
     const qualifiedCasePage = new CasePage(page);
-   // await qualifiedCasePage.navigateToHomePage();
     await qualifiedCasePage.closeCookieBanner();
     await qualifiedCasePage.searchAndOpenCase(testData.caseName);
     await qualifiedCasePage.startQualification();
-    await qualifiedCasePage.fillPersonalDetails(testData.firstName, testData.lastName, testData.dropdownSelection_yes);
-    const email = await qualifiedCasePage.fillContactInfo(testData.emailforqualified, testData.phone);
-    await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.city, testData.zip);
+    await qualifiedCasePage.qualifierQuestion(testData.option1);
+   
+    // Fill survey details (Page 1)
+    await qualifiedCasePage.fillSurvey(testData.DOBday, testData.DOBmonth, testData.DOByear);
+    await qualifiedCasePage.NextButton();
+
+    // Fill contact details (Page 2)
+    await qualifiedCasePage.fillContactDetails(testData.firstName, testData.lastName, testData.phone);
+    await qualifiedCasePage.NextButton();
+
+    // Fill address details (Page 3)
+    await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.addresline3, testData.city, testData.zip);
+    
+    // Fill additional Instagram details
+    await qualifiedCasePage.fillAdditionalDetails(testData.createdMonth, testData.CreatedYear, testData.endMonth, testData.endYear);
     await qualifiedCasePage.submitForm();
     await qualifiedCasePage.verifySuccessMessage();
   });
@@ -39,10 +50,22 @@ test.describe('Case Qualification Tests', () => {
    // await disqualifiedCasePage.navigateToHomePage();
     await disqualifiedCasePage.closeCookieBanner();
     await disqualifiedCasePage.searchAndOpenCase(testData.caseName);
+    
     await disqualifiedCasePage.startQualification();
-    await disqualifiedCasePage.fillPersonalDetails(testData.firstName, testData.lastName, testData.dropdownSelection_no);
-    const email = await disqualifiedCasePage.fillContactInfo(testData.emailfordisqualified, testData.phone);
-    await disqualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.city, testData.zip);
+    await disqualifiedCasePage.qualifierQuestion(testData.option2);
+    // Fill survey details (Page 1)
+    await disqualifiedCasePage.fillSurvey(testData.DOBday, testData.DOBmonth, testData.DOByear);
+    await disqualifiedCasePage.NextButton();
+
+    // Fill contact details (Page 2)
+    await disqualifiedCasePage.fillContactDetails(testData.firstName, testData.lastName, testData.phone);
+    await disqualifiedCasePage.NextButton();
+
+    // Fill address details (Page 3)
+    await disqualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.addresline3, testData.city, testData.zip);
+    
+    // Fill additional Instagram details
+    await disqualifiedCasePage.fillAdditionalDetails(testData.createdMonth, testData.CreatedYear, testData.endMonth, testData.endYear);
     await disqualifiedCasePage.submitForm();
     await disqualifiedCasePage.verifyDisqualificationMessage();
   });
