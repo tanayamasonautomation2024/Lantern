@@ -1,4 +1,0 @@
-Created directory: /home/runner/work/Lantern/Lantern/downloads
-Created directory: /home/runner/work/Lantern/Lantern/release-document
-Created directory: /home/runner/work/Lantern/Lantern/aca-document
-Created directory: /home/runner/work/Lantern/Lantern/reference-document
