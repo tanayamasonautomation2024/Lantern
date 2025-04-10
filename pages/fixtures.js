@@ -62,7 +62,7 @@ export const lanternFixtures = base.extend({
     console.log(`Logging in with email: ${testEmail}`);
 
     await loginPage.goto();
-    await loginPage.closeCookieBanner();
+   // await loginPage.closeCookieBanner();
     await loginPage.signin(testEmail, lanternPassword);
 
     await mailinator.gotoLoginPage();

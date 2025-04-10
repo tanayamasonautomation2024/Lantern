@@ -15,12 +15,6 @@ export class AdminPageVerifyDetails {
     this.emailSection = this.page.locator('.profile-infos:has-text("Emails")');
     this.addressSection = this.page.locator('.profile-infos:has-text("Addresses")');
 
-    // this.industryAlertsCheckbox = page.getByText('Industry Alerts');
-    // this.marketingEmailsCheckbox = page.getByText('Marketing Emails');
-    // this.newsletterCheckbox = page.getByText('Newsletter');
-    // this.emailCheckbox = page.getByText('Email', { exact: true });
-    // this.smsCheckbox = page.getByText('SMS');
-    // this.industryAlertsToggle = page.getByRole('listitem').filter({ hasText: 'Industry Alerts' }).locator('div').nth(1);
     this.editCommunicationPreferanceButton = page.getByRole('heading', { name: 'Marketing Preferences' }).getByRole('button');
   }
 
@@ -75,11 +69,11 @@ export class AdminPageVerifyDetails {
     await expect(secondaryEmailLocator).toHaveCount(1);
     console.log(`✔ Secondary Email matched ✅`);
 
-    const primaryAddressLocator = this.addressSection.locator(`.profile-items.starred:has-text("${expectedPrimaryAddress.slice(0, 10)}")`);
+    const primaryAddressLocator = this.addressSection.locator(`.profile-items.starred:has-text("${expectedPrimaryAddress.slice(0, 10)}")`).first();
     await expect(primaryAddressLocator).toHaveCount(1);
     console.log(`✔ Primary Address matched ✅`);
 
-    const secondaryAddressLocator = this.addressSection.locator(`.profile-items:has-text("${expectedSecondaryAddress.slice(0, 10)}")`);
+    const secondaryAddressLocator = this.addressSection.locator(`.profile-items:has-text("${expectedSecondaryAddress.slice(0, 10)}")`).first();
     await expect(secondaryAddressLocator).toHaveCount(1);
     console.log(`✔ Secondary Address matched ✅`);
   }

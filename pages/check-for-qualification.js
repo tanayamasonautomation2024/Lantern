@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import fs from 'fs';
-import testData from '../test_data/qualification_case_details.json' assert { type: 'json' };
+const path = require('path');
 
 export class CasePage {
   constructor(page) {
@@ -14,9 +14,6 @@ export class CasePage {
     this.getStartedButton = page.getByRole('button', { name: 'Get Started' });
 
     //page1
-    // this.haveCreatedInstagram = page.getByLabel('Have you created an Instagram').locator('label').filter({ hasText: answer });
-    // this.haveUsedInstagram = page.getByLabel('Have you used Instagram since').locator('label').filter({ hasText: answer });
-    // this.haveExperiencedIssues = page.getByLabel('Have you ever experienced any').locator('label').filter({ hasText: answer });
     this.dobMonth = page.locator('#whatIsYourDateOfBirth-month');
     this.dobDay = page.locator('#whatIsYourDateOfBirth-day');
     this.dobYear = page.locator('#whatIsYourDateOfBirth-year');
@@ -32,24 +29,19 @@ export class CasePage {
     this.nextButton = page.getByRole('button', { name: 'Next button. Click to go to' });
 
     //page2
-    this.contactSection = page.locator('section').filter({ hasText: 'Contact' });
-
     this.firstNameInput = page.getByRole('textbox', { name: 'First Name *' });
     this.lastNameInput = page.getByRole('textbox', { name: 'Last Name *' });
     this.emailInput = page.getByRole('textbox', { name: 'What is the best email' });
-
     this.emailConfirmationYes = page.getByLabel('Is the email address you just').locator('label').filter({ hasText: 'Yes' });
-
     this.selectCodeDropdown = page.getByText('Select CodeSelect CodeRemove');
     this.countryCodeUS = page.getByText('+1', { exact: true });
-
     this.phoneNumberInput = page.getByRole('textbox', { name: 'Phone Number *' });
     this.phoneConfirmationYes = page.getByLabel('Is the phone number you just').locator('label').filter({ hasText: 'Yes' });
 
     //page3
     this.autocompleteInput = page.getByRole('textbox', { name: 'autocomplete' });
-    // this.addressSelection = page.getByText(autosuggestadd);
     this.addressLine1Input = page.getByRole('textbox', { name: 'AddressLine 1 *' });
+    this.addressLine2Input = page.getByRole('textbox', { name: 'AddressLine 2' });
     this.addressLine3Input = page.getByRole('textbox', { name: 'AddressLine 3' });
     this.cityInput = page.getByRole('textbox', { name: 'City *' });
     this.stateSelection = page.getByText('<span>Illinois</span>IllinoisRemove item');
@@ -59,7 +51,7 @@ export class CasePage {
     this.changedUsernameNo = page.getByLabel('Have you ever changed your').locator('label').filter({ hasText: 'No' });
     this.accountCreationMonth = page.locator('#whenDidYouCreateYourInstagramAccount-month');
     this.accountCreationYear = page.locator('#whenDidYouCreateYourInstagramAccount-year');
-    this.stillUsingInstagramYes = page.getByLabel('Do you still use Instagram?').locator('label').filter({ hasText: 'Yes' });
+    this.stillUsingInstagramYes = page.getByLabel('Do you still use Instagram?').locator('label').filter({ hasText: 'No' });
     this.stopUsingMonth = page.locator('#whenDidYouStopUsingInstagram-month');
     this.stopUsingYear = page.locator('#whenDidYouStopUsingInstagram-year');
     this.submitButton = page.getByRole('button', { name: 'Submit button. Click to' });
@@ -92,17 +84,9 @@ export class CasePage {
   }
 
   async qualifierQuestion(answer){
-    const haveCreatedInstagram = this.page.getByLabel('Have you created an Instagram')
-        .locator('label')
-        .filter({ hasText: answer });
-
-    const haveUsedInstagram = this.page.getByLabel('Have you used Instagram since')
-        .locator('label')
-        .filter({ hasText: answer });
-
-    const haveExperiencedIssues = this.page.getByLabel('Have you ever experienced any')
-        .locator('label')
-        .filter({ hasText: answer });
+    const haveCreatedInstagram = this.page.getByLabel('Have you created an Instagram').locator('label').filter({ hasText: answer });
+    const haveUsedInstagram = this.page.getByLabel('Have you used Instagram since').locator('label').filter({ hasText: answer });
+    const haveExperiencedIssues = this.page.getByLabel('Have you ever experienced any').locator('label').filter({ hasText: answer });
     await haveCreatedInstagram.waitFor({state:'visible'});
     await haveCreatedInstagram.click();
     await haveUsedInstagram.click();
@@ -113,22 +97,43 @@ export class CasePage {
     await this.dobMonth.fill(DOBday);
     await this.dobDay.fill(DOBmonth);
     await this.dobYear.fill(DOByear);
-    await this.depressionCheckbox.click();
-    await this.insomniaCheckbox.click();
-    await this.eatingDisordersCheckbox.click();
+    // Read the JSON file
+    const filePath = path.join(__dirname, '../test_data/qualification_case_details.json');
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+    // Extract health conditions and split them into an array
+    const conditions = data.health_condtition.split(', ');
+    const treatments = data.treatment.split(', ');
+
+    // Shuffle and pick 3 random conditions
+    const shuffled = conditions.sort(() => 0.5 - Math.random());
+    const selectedConditions = shuffled.slice(0, 3);
+
+    console.log("Selected conditions:", selectedConditions);
+
+    // Click the checkboxes matching the selected conditions
+    for (const condition of selectedConditions) {
+        const checkbox = await this.page.locator(`text="${condition}"`);
+        await checkbox.click();
+    }
     await this.treatedByMedical.click();
-    await this.antiAnxietyMedication.click();
-    await this.antiDepressantMedication.click();
-    await this.sleepMedication.click();
+    // Shuffle and pick 3 random treatments for the dropdown
+        const shuffledTreatments = treatments.sort(() => 0.5 - Math.random());
+        const selectedTreatments = shuffledTreatments.slice(0, 3);
+        console.log("Selected treatments:", selectedTreatments);
+
+    // Select the treatments from the dropdown
+        for (const treatment of selectedTreatments) {
+        await this.page.locator(`div.choices__item[data-value="${treatment}"]`).click();
+      }
   }
 
   async NextButton(){
     await this.nextButton.click();
   }
 
-  async fillContactDetails(firstname, lastname, phone) {
+  async fillContactDetailsGuestUser(firstname, lastname, phone) {
     const testemail = `automation_qual${Math.floor(Math.random() * 100000) + 1}@lantern.throwemails.com`;
-    // **Write the email to a file**
     const newEmailFilePath = 'qualification-email.txt';
       try {
           fs.writeFileSync(newEmailFilePath, testemail);
@@ -138,7 +143,6 @@ export class CasePage {
           throw err;
         }
 
-    await this.contactSection.click();
     await this.firstNameInput.fill(firstname);
     await this.lastNameInput.fill(lastname);
     await this.emailInput.fill(testemail);
@@ -150,12 +154,21 @@ export class CasePage {
     return testemail;
   }
 
-  async fillAddress(address, autosuggestadd, addressline1, addressline3, city, zip) {
-    // Fill Address
+  async fillContactDetailsLoggedInUser(phone) {
+
+    await this.emailConfirmationYes.click();
+    await this.selectCodeDropdown.click();
+    await this.countryCodeUS.click();
+    await this.phoneNumberInput.fill(phone);
+    await this.phoneConfirmationYes.click();
+  }
+
+  async fillAddress(address, autosuggestadd, addressline1,addressline2, addressline3, city, zip) {
     await this.autocompleteInput.click();
-    await this.autocompleteInput.fill(address);
+    await this.autocompleteInput.type(address);
     await this.page.getByText(autosuggestadd).click();
     await this.addressLine1Input.fill(addressline1);
+    await this.addressLine2Input.fill(addressline2);
     await this.addressLine3Input.fill(addressline3);
     await this.cityInput.fill(city);
     await this.zipCodeInput.fill(zip);
@@ -171,20 +184,14 @@ export class CasePage {
         console.error('Error reading email from file:', err);
         throw err;
     }
-    // Extract Instagram username from email
     const emailPrefix = email.split('@')[0];  // Get the part before '@'
     const instaUserName = emailPrefix.replace(/(\d+)/, '_$1'); // Insert '_' before numbers
 
-    // Fill Instagram handle
     await this.instagramHandleInput.fill(instaUserName);
-    // Change Username Confirmation
     await this.changedUsernameNo.click();
-    // Account Creation Date
     await this.accountCreationMonth.fill(createdmonth);
     await this.accountCreationYear.fill(CreatedYear);
-    // Still Using Instagram
     await this.stillUsingInstagramYes.click();
-    // Stopped Using Instagram Date
     await this.stopUsingMonth.fill(endMonth);
     await this.stopUsingYear.fill(endYear);
   }

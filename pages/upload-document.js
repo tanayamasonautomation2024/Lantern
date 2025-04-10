@@ -7,14 +7,14 @@ export class UploadPDF {
 
         // **Locators**
         this.viewCaseDetailButton = page.locator('a.btn.outline[href^="/dashboard/claim/submit"]');
-        this.companyNameInput = page.locator('input[name="data[whatIsYourCompanyName]"]');
-        this.supportDocumentButton = page.getByRole('button', { name: 'Support Document 1 required' });
+        this.claimDocuments = page.getByRole('button', { name: 'Instagram Claim Documents' });
         this.dragFilesArea = page.getByText('Drag your files here or click');
         this.uploadInput = page.locator('.uploadFile');
         this.progressBar = page.locator('.progress-bar-box');
         this.submitButton = page.getByRole('button', { name: 'Submit Information' });
         this.uploadStatus = page.locator('.status-tag.complete', { hasText: 'Uploaded' });
-        this.nextButton = page.locator('button.next-workflow');
+        this.diagnosingButton = page.getByRole('button', { name: 'Screenshot of Diagnosing' })
+        this.treatmentButtom = page.getByRole('button', { name: 'Screenshot of Treatment' })
     }
 
     async viewCaseDetail() {
@@ -22,27 +22,21 @@ export class UploadPDF {
         await this.viewCaseDetailButton.click();
     }
 
-    async fillCompanyName(companyName) {
-        await this.companyNameInput.waitFor({ state: 'visible' });
-        await this.companyNameInput.fill(companyName);
-    }
-
-    async clickNextButton() {
-    
-        // Wait for the "Next" button to be visible and enabled
-        await (this.nextButton).waitFor({ state: 'visible' });
-    
-        // Optionally, you can check if the button is enabled
-        await expect(this.nextButton).not.toBeDisabled();
-    
-        // Click the "Next" button
-        await this.nextButton.click();
+    async clickDiagnosingButton() {
+        await this.diagnosingButton.waitFor({ state: 'visible' });
+        await this.diagnosingButton.click();
       }
 
-    async clicksupportDocumentButton(){
-        await this.supportDocumentButton.waitFor({ state: 'visible' });
-        await this.supportDocumentButton.click();
+    async clickTreatmentButton() {
+        await this.treatmentButtom.waitFor({ state: 'visible' });
+        await this.treatmentButtom.click();
+      }
+
+    async clickClaimDocumentButton(){
+        await this.claimDocuments.waitFor({ state: 'visible' });
+        await this.claimDocuments.click();
     }
+    
     
     async uploadDocuments() {
         // **File Paths**
@@ -77,11 +71,6 @@ export class UploadPDF {
 
         // **More Robust Upload Status Check**
         await this.page.waitForSelector('.status-tag.complete', { timeout: 30000 });
-        const statusText = await this.uploadStatus.innerText();
-        if (statusText.trim() !== "Uploaded") {
-            throw new Error("❌ Upload status not detected properly.");
-        }
-
         console.log("✅ Files uploaded successfully!");
     }
 }

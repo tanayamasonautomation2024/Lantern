@@ -129,16 +129,20 @@ export class MyAccountPage {
   async addNewAddress(){
     await this.add_address_button.click();
     await expect(this.primary_button_new).toBeVisible();
-    await this.page.locator('input[name="address\\.1\\.StreetAddress1"]').click();
-    await this.page.locator('input[name="address\\.1\\.StreetAddress1"]').fill(accountData.new_street1);
-    await this.page.locator('input[name="address\\.1\\.StreetAddress2"]').click();
-    await this.page.locator('input[name="address\\.1\\.StreetAddress2"]').fill(accountData.new_street2);
+    await this.page.locator('input[name="address\\.2\\.StreetAddress1"]').click();
+    await this.page.locator('input[name="address\\.2\\.StreetAddress1"]').fill(accountData.new_street1);
+    await this.page.locator('input[name="address\\.2\\.StreetAddress2"]').click();
+    await this.page.locator('input[name="address\\.2\\.StreetAddress2"]').fill(accountData.new_street2);
     // await this.page.locator('div').filter({ hasText: /^Country$/ }).click();
     // await this.page.getByRole('listitem').filter({ hasText: /^US$/ }).click();
     await this.page.locator('input[name="address\\.1\\.PostCode"]').click();
-    await this.page.locator('input[name="address\\.1\\.PostCode"]').fill(accountData.new_zip);
+    await this.page.locator('input[name="address\\.1\\.PostCode"]').fill("");
+    await this.page.locator('input[name="address\\.1\\.PostCode"]').click();
+    await this.page.locator('input[name="address\\.1\\.PostCode"]').fill('12345');
+    await this.page.locator('input[name="address\\.2\\.PostCode"]').click();
+    await this.page.locator('input[name="address\\.2\\.PostCode"]').fill(accountData.new_zip);
     await this.page.waitForTimeout(2000);
-    await this.primary_button_new.click();
+    //await this.primary_button_new.click();
     await this.save_button.click();
     await (this.details_saved_message).waitFor({state:'visible'});
   }

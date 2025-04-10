@@ -32,11 +32,11 @@ test.describe('Case Qualification Tests', () => {
     await qualifiedCasePage.NextButton();
 
     // Fill contact details (Page 2)
-    await qualifiedCasePage.fillContactDetails(testData.firstName, testData.lastName, testData.phone);
+    await qualifiedCasePage.fillContactDetailsGuestUser(testData.firstName, testData.lastName, testData.phone);
     await qualifiedCasePage.NextButton();
 
     // Fill address details (Page 3)
-    await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.addresline3, testData.city, testData.zip);
+    await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.addresslin2, testData.addresline3, testData.city, testData.zip);
     
     // Fill additional Instagram details
     await qualifiedCasePage.fillAdditionalDetails(testData.createdMonth, testData.CreatedYear, testData.endMonth, testData.endYear);
@@ -50,19 +50,19 @@ test.describe('Case Qualification Tests', () => {
    // await disqualifiedCasePage.navigateToHomePage();
     await disqualifiedCasePage.closeCookieBanner();
     await disqualifiedCasePage.searchAndOpenCase(testData.caseName);
-    
     await disqualifiedCasePage.startQualification();
     await disqualifiedCasePage.qualifierQuestion(testData.option2);
+   
     // Fill survey details (Page 1)
     await disqualifiedCasePage.fillSurvey(testData.DOBday, testData.DOBmonth, testData.DOByear);
     await disqualifiedCasePage.NextButton();
 
     // Fill contact details (Page 2)
-    await disqualifiedCasePage.fillContactDetails(testData.firstName, testData.lastName, testData.phone);
+    await disqualifiedCasePage.fillContactDetailsGuestUser(testData.firstName, testData.lastName, testData.phone);
     await disqualifiedCasePage.NextButton();
 
     // Fill address details (Page 3)
-    await disqualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.addresline3, testData.city, testData.zip);
+    await disqualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.addresslin2, testData.addresline3, testData.city, testData.zip);
     
     // Fill additional Instagram details
     await disqualifiedCasePage.fillAdditionalDetails(testData.createdMonth, testData.CreatedYear, testData.endMonth, testData.endYear);

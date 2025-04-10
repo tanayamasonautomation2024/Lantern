@@ -11,12 +11,12 @@ export default defineConfig({
   testDir: 'tests',
   outputDir: 'test-results',
   fullyParallel: true,
-  workers: 3,
+  workers: 2,
   retries: process.env.CI ? 1 : 1,
   reporter: [['allure-playwright']],
   use: {
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    trace: 'off',
+    screenshot: 'off',
     acceptDownloads: true,
   },
   projects: [
@@ -27,10 +27,19 @@ export default defineConfig({
         //channel: 'msedge',
         viewport: { width: 1280, height: 1024 },
         launchOptions: {
-          args: ['--start-maximized'],
+          args: [
+            '--start-maximized',
+            '--disable-gpu',
+            '--no-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-extensions',
+            '--disable-background-networking',
+            '--disable-software-rasterizer',
+            '--disable-renderer-backgrounding',
+          ],
+        },
         },
       },
-    },
     {
       name: 'Edge Guest User Scenarios',
       // Explicitly match `guest-user-scenarios.spec.js` for Edge

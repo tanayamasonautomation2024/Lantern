@@ -9,7 +9,7 @@ import fs from 'fs';
 dotenv.config();
 
 test('Lantern Admin Flow', async ({ page }) => {
-  test.setTimeout(100000);
+  test.setTimeout(1200000);
   const adminPage = new AdminPage(page);
   const pdfVerifier = new DownloadAndVerifyPDF(page);
   const adminverifydetails = new AdminPageVerifyDetails(page);
@@ -23,35 +23,33 @@ test('Lantern Admin Flow', async ({ page }) => {
 
   // Open Case Details and Search Claimant
   await adminPage.openCaseDetails();
+  // await adminPage.selectTagAndFillEmail();
+  await adminPage.searchClaimant(email);
+
+  // Verify Claimant Details
+  await adminverifydetails.verifyClaimantDetails();
+
+  // Verify Questionnaire Details
+  await adminPage.verifyQuestionnaireDetails(testData.caseName);
+
+  // Download Documents and Signatures
+  await adminPage.downloadAndVerifyZip();
+  const { acaPath } = await adminPage.downloadACADocuments();
+  console.log(`📂 ACA PDF Path: ${acaPath}`);
+
+  const isACAValid = await pdfVerifier.verifyPDF(acaPath);
+  expect(isACAValid).toBeTruthy();
+
+  // Upload Internal File
+  await adminPage.uploadInternalFile(testData.file_name);
+
+  // Verify Personal information
+  await adminverifydetails.verifyPersonalInformation();
+  await adminverifydetails.verifyPrimaryIndicators();
+
+  // Handle Notifications
+  await adminverifydetails.verifyMarketingAndCommunicationPreferences();
+  await adminverifydetails.clearDownloadFolders();
+  await adminPage.closeLink();
   await adminPage.selectTagAndFillEmail();
-  // await adminPage.searchClaimant(email);
-
-  // // Verify Claimant Details
-  // await adminverifydetails.verifyClaimantDetails();
-
-  // // Verify Questionnaire Details
-  // await adminPage.verifyQuestionnaireDetails(testData.caseName);
-
-  // // // Download Documents and Signatures
-  // await adminPage.downloadAndVerifyZip();
-  // const { releasePath, acaPath } = await adminPage.downloadReleaseAndACADocuments();
-  // console.log(`📂 Release PDF Path: ${releasePath}`);
-  // console.log(`📂 ACA PDF Path: ${acaPath}`);
-
-  // // const isReleaseValid = await pdfVerifier.verifyAdminPDF(releasePath);
-  // // expect(isReleaseValid).toBeTruthy();
-
-  // // const isACAValid = await pdfVerifier.verifyAdminPDF(acaPath);
-  // // expect(isACAValid).toBeTruthy();
-
-  // // Upload Internal File
-  // await adminPage.uploadInternalFile(testData.file_name);
-
-  // // Verify Personal information
-  // await adminverifydetails.verifyPersonalInformation();
-  // await adminverifydetails.verifyPrimaryIndicators();
-
-  // // Handle Notifications
-  // await adminverifydetails.verifyMarketingAndCommunicationPreferences();
-  // await adminverifydetails.clearDownloadFolders();
 });

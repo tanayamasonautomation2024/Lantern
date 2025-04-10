@@ -1,6 +1,7 @@
 import { test, expect, devices } from '@playwright/test';
 import { CasePage } from '../pages/check-for-qualification.js';
 import { ESignAgreementPage } from '../pages/esign-agreement-page.js';
+import esign_data from '../test_data/agreement_details.json';
 import testData from '../test_data/qualification_case_details.json' assert { type: 'json' };
 
 let email='';
@@ -41,19 +42,21 @@ test.describe.serial('Not-LoggedIn User Scenarios', () => {
     await qualifiedCasePage.NextButton();
 
     // Fill contact details (Page 2)
-    email = await qualifiedCasePage.fillContactDetails(testData.firstName, testData.lastName, testData.phone);
+    await qualifiedCasePage.fillContactDetailsGuestUser(testData.firstName, testData.lastName, testData.phone);
     await qualifiedCasePage.NextButton();
 
     // Fill address details (Page 3)
-    await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.addresline3, testData.city, testData.zip);
+    await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1,testData.addresslin2, testData.addresline3, testData.city, testData.zip);
     
     // Fill additional Instagram details
     await qualifiedCasePage.fillAdditionalDetails(testData.createdMonth, testData.CreatedYear, testData.endMonth, testData.endYear);
     await qualifiedCasePage.submitForm();
     await qualifiedCasePage.verifySuccessMessage();
-    await eSignDocumentPage.signAgreementGuest(email);
-   // await eSignDocumentPage.signReleaseDocument();
-   // await eSignDocumentPage.completeSignReleaseProcess();
+   await eSignDocumentPage.signAgreement(esign_data.birthYear, esign_data.birthMonth, esign_data.birthDay,
+         esign_data.ssn, esign_data.patientAddress, esign_data.healthProvider, esign_data.healthProviderAddress,
+         esign_data.start_year, esign_data.start_month, esign_data.start_day, esign_data.end_year, esign_data.end_month,
+         esign_data.end_day, esign_data.otherCondition, esign_data.initials, esign_data.doctor_name, esign_data.expiry_year,
+         esign_data.expiry_month, esign_data.expiry_day, esign_data.signer_name, esign_data.authorized_representative);
   });
 
 // test.describe("Admin Scenario", () => {

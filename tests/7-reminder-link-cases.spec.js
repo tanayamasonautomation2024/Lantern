@@ -2,12 +2,16 @@ import { test, expect, chromium } from '@playwright/test';
 import { ConnectToDBPage } from '../pages/reminder-link.js';
 import { CasePage } from '../pages/check-for-qualification.js';
 import { ESignAgreementPage } from '../pages/esign-agreement-page.js';
-import testData from '../test_data/my_account.json' assert { type: 'json' };
+import accData from '../test_data/my_account.json' assert { type: 'json' };
+import testData from '../test_data/qualification_case_details.json';
 import { DownloadAndVerifyPDF } from '../pages/download-and-verify-pdf.js';
 import { UploadPDF } from '../pages/upload-document.js';
 import { LoginPage } from '../pages/login-page.js';
 import { MailinatorPage } from '../pages/mailinator-page.js';
 import { MyAccountPage } from '../pages/my-account-page.js';
+import esign_data from '../test_data/agreement_details.json';
+import { AdditionalHarmPage } from '../pages/additional-forms-page.js';
+import additional_details from '../test_data/additional_form.json';
 import fs from 'fs';
 import path from 'path';
 
@@ -23,9 +27,10 @@ let page;
 let reminder_link = '';
 
 test.describe.serial('Reminder Link Test', () => {
-  test.setTimeout(300000);
+  test.setTimeout(2000000);
 
   test.beforeAll(async () => {
+    test.setTimeout(1200000);
     // Clear the download folder before all tests start
     clearDownloadFolder();
 
@@ -43,57 +48,240 @@ test.describe.serial('Reminder Link Test', () => {
       await qualifiedCasePage.closeCookieBanner();
       await qualifiedCasePage.searchAndOpenCase(testData.caseName);
       await qualifiedCasePage.startQualification();
-      await qualifiedCasePage.fillPersonalDetails(testData.firstName, testData.lastName, testData.dropdownSelection_yes);
+      await qualifiedCasePage.qualifierQuestion(testData.option1);
+
+      // Fill survey details (Page 1)
+      await qualifiedCasePage.fillSurvey(testData.DOBday, testData.DOBmonth, testData.DOByear);
+      await qualifiedCasePage.NextButton();
+      // Store the email in the shared variable
+      sharedEmail = await qualifiedCasePage.fillContactDetailsGuestUser(testData.firstName, testData.lastName, testData.phone);
+      await qualifiedCasePage.NextButton();
+
+      // Fill address details (Page 3)
+      await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1,testData.addresslin2, testData.addresline3, testData.city, testData.zip);
+
+      // Fill additional Instagram details
+      await qualifiedCasePage.fillAdditionalDetails(testData.createdMonth, testData.CreatedYear, testData.endMonth, testData.endYear);
+      await qualifiedCasePage.submitForm();
+      await qualifiedCasePage.verifySuccessMessage();
+
+      console.log(sharedEmail);
+
     } catch (error) {
       console.error("An error occurred in test.beforeAll:", error);
     }
   });
 
-  test('Connect To DB - Fetch Token and generate the Reminder link', async () => {
+  test('Connect To DB - Fetch Token and generate the Reminder link- esign and fill Basic forms', async () => {
     const db = new ConnectToDBPage(page);
     const qualifiedCasePage = new CasePage(page);
     const eSignDocumentPage = new ESignAgreementPage(page);
     const uploadDocument = new UploadPDF(page);
+    const additionalform = new AdditionalHarmPage(page);
 
-    // Store the email in the shared variable
-    sharedEmail = await qualifiedCasePage.fillContactInfo(testData.emailforqualified, testData.phone);
-
-    await qualifiedCasePage.fillAddress(testData.address, testData.autosuggestadd, testData.addressline1, testData.city, testData.zip);
-    await page.waitForTimeout(2000);
-    await qualifiedCasePage.submitForm();
-    await qualifiedCasePage.verifySuccessMessage();
-
-    console.log(sharedEmail); // Log the email to ensure it's stored correctly
+    // Log the email to ensure it's stored correctly
 
     const token = await db.connectToDB(sharedEmail);
     reminder_link = await db.generateReminderLink(token);
     await page.goto(reminder_link);
     await qualifiedCasePage.closeCookieBanner();
     await page.waitForTimeout(2000);
-    await db.esignFromReminderLink(sharedEmail);
+    await db.esignFromReminderLink(esign_data.birthYear, esign_data.birthMonth, esign_data.birthDay,
+      esign_data.ssn, esign_data.patientAddress, esign_data.healthProvider, esign_data.healthProviderAddress,
+      esign_data.start_year, esign_data.start_month, esign_data.start_day, esign_data.end_year, esign_data.end_month,
+      esign_data.end_day, esign_data.otherCondition, esign_data.initials, esign_data.doctor_name, esign_data.expiry_year,
+      esign_data.expiry_month, esign_data.expiry_day, esign_data.signer_name, esign_data.authorized_representative);
     await db.clickNextButton();
-    await db.fillCompanyName(sharedEmail);
-    await db.clickSubmit();
+    await additionalform.fillBasicClaimDetailForm();
+    console.log('🎯 Basic Instagram Claim Details filled');
 
-    await db.clickNextButton();
-    await uploadDocument.uploadDocuments();
-
-    await db.clickNextButton();
-    await eSignDocumentPage.signReleaseDocument();
-    await page.waitForTimeout(3000);
   });
 
-  test('Download the documents filled using reminder link and verify', async () => {
+  test('Fill Harm forms 1', async () => {
+    const db = new ConnectToDBPage(page);
+    const qualifiedCasePage = new CasePage(page);
+    const eSignDocumentPage = new ESignAgreementPage(page);
+    const uploadDocument = new UploadPDF(page);
+    const additionalform = new AdditionalHarmPage(page);
+    await page.goto(reminder_link);
+    await qualifiedCasePage.closeCookieBanner();
+    await page.waitForTimeout(2000);
+    await additionalform.clickNextAfterSubmit();
+    // Instagram Additional Harm Form 1
+    await additionalform.form1Page1(additional_details.harm1_options);
+    await additionalform.clickNextButton();
+    // Page 2
+    await additionalform.fillDate(additional_details.start_month, additional_details.start_year);
+    await additionalform.fillYesNoQuestions(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.physicianTextbox, additional_details.physician_name);
+    await additionalform.fillTextBox(additional_details.pharmacyTextbox, additional_details.pharmacy_name);
+    await additionalform.fillTextBox(additional_details.hospitalTextbox, additional_details.hospital_name);
+    await additionalform.fillAddress(additional_details.address);
+    console.log('🎯 Page2 filled successfully!');
+    await additionalform.clickNextButton();
+    // Page 3
+    await additionalform.fillDate(additional_details.start_month, additional_details.start_year);
+    await additionalform.fillYesNoQuestions(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.physicianTextbox, additional_details.physician_name);
+    await additionalform.fillTextBox(additional_details.pharmacyTextbox, additional_details.pharmacy_name);
+    await additionalform.fillTextBox(additional_details.hospitalTextbox, additional_details.hospital_name);
+    await additionalform.fillAddress(additional_details.address);
+    console.log('🎯 Page3 filled successfully!');
+    await additionalform.clickNextButton();
+    // Page 4
+    await additionalform.fillDate(additional_details.start_month, additional_details.start_year);
+    await additionalform.fillYesNoQuestions(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.physicianTextbox, additional_details.physician_name);
+    await additionalform.fillTextBox(additional_details.pharmacyTextbox, additional_details.pharmacy_name);
+    await additionalform.fillTextBox(additional_details.hospitalTextbox, additional_details.hospital_name);
+    await additionalform.fillAddress(additional_details.address);
+    console.log('🎯 Page4 filled successfully!');
+    await additionalform.clickNextButton();
+    // Page 5
+    await additionalform.fillDate(additional_details.start_month, additional_details.start_year);
+    await additionalform.fillYesNoQuestions(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.physicianTextbox, additional_details.physician_name);
+    await additionalform.fillTextBox(additional_details.pharmacyTextbox, additional_details.pharmacy_name);
+    await additionalform.fillTextBox(additional_details.hospitalTextbox, additional_details.hospital_name);
+    await additionalform.fillAddress(additional_details.address);
+    console.log('🎯 Page5 filled successfully!');
+    await additionalform.clickNextButton();
+    //Page 6
+    await additionalform.fillDate(additional_details.start_month, additional_details.start_year);
+    await additionalform.fillYesNoQuestions(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.physicianTextbox, additional_details.physician_name);
+    await additionalform.fillTextBox(additional_details.pharmacyTextbox, additional_details.pharmacy_name);
+    await additionalform.fillTextBox(additional_details.hospitalTextbox, additional_details.hospital_name);
+    await additionalform.fillAddress(additional_details.address);
+    console.log('🎯 Page6 filled successfully!');
+    await additionalform.clickNextButton();
+    //Page 7
+    await additionalform.fillDate(additional_details.start_month, additional_details.start_year);
+    await additionalform.fillYesNoQuestions(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.physicianTextbox, additional_details.physician_name);
+    await additionalform.fillTextBox(additional_details.pharmacyTextbox, additional_details.pharmacy_name);
+    await additionalform.fillTextBox(additional_details.hospitalTextbox, additional_details.hospital_name);
+    await additionalform.fillAddress(additional_details.address);
+    console.log('🎯 Page7 filled successfully!');
+    await additionalform.clickNextButton();
+    //Page 8
+    await additionalform.fillDate(additional_details.start_month, additional_details.start_year);
+    await additionalform.fillYesNoQuestions(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.physicianTextbox, additional_details.physician_name);
+    await additionalform.fillTextBox(additional_details.pharmacyTextbox, additional_details.pharmacy_name);
+    await additionalform.fillTextBox(additional_details.hospitalTextbox, additional_details.hospital_name);
+    await additionalform.fillAddress(additional_details.address);
+    console.log('🎯 Page8 filled successfully!');
+    await additionalform.clickNextButton();
+    // Page 9
+    await additionalform.fillDate(additional_details.start_month, additional_details.start_year);
+    await additionalform.page9(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.physicianTextbox, additional_details.physician_name);
+    await additionalform.fillTextBox(additional_details.pharmacyTextbox, additional_details.pharmacy_name);
+    // await additionalform.fillTextBox(additional_details.hospitalTextbox, additional_details.hospital_name);
+    await additionalform.fillAddress(additional_details.address);
+    console.log('🎯 Page9 filled successfully!');
+    await page.waitForTimeout(3000);
+    await additionalform.clickSubmitButton();
+    console.log('🎯 Instagram Additional Harm Form 1 filled!');
+
+  });
+  test('Fill Harm form 2 and additional damage form', async () => {
+    const db = new ConnectToDBPage(page);
+    const qualifiedCasePage = new CasePage(page);
+    const eSignDocumentPage = new ESignAgreementPage(page);
+    const uploadDocument = new UploadPDF(page);
+    const additionalform = new AdditionalHarmPage(page);
+    await page.goto(reminder_link);
+    await qualifiedCasePage.closeCookieBanner();
+    await page.waitForTimeout(2000);
+    //await additionalform.clickNextAfterSubmit();
+    await additionalform.clickNextAfterSubmit();
+    // Instagram Additional Harm Form 2
+    await additionalform.form2Page1(additional_details.harm2_options);
+    await additionalform.clickNextButton();
+    // Page2
+    await additionalform.fillTextBox(additional_details.dateTextbox, additional_details.date_occured);
+    await additionalform.addtionalForm2yesorno(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.organizationTextbox, additional_details.organization_name);
+    await additionalform.fillTextBox(additional_details.resolutionTextbox, additional_details.resolutionAns);
+    console.log('🎯 Form 2 page2 filled successfully!');
+    await additionalform.clickNextButton();
+    // Page3
+    await additionalform.fillTextBox(additional_details.dateTextbox, additional_details.date_occured);
+    await additionalform.addtionalForm2yesorno(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.organizationTextbox, additional_details.organization_name);
+    await additionalform.fillTextBox(additional_details.resolutionTextbox, additional_details.resolutionAns);
+    console.log('🎯 Form 2 page3 filled successfully!');
+    await additionalform.clickNextButton();
+    // Page 4
+    await additionalform.fillTextBox(additional_details.dateTextbox, additional_details.date_occured);
+    await additionalform.addtionalForm2yesorno(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.organizationTextbox, additional_details.organization_name);
+    await additionalform.fillTextBox(additional_details.resolutionTextbox, additional_details.resolutionAns);
+    console.log('🎯 Form 2 page4 filled successfully!');
+    await additionalform.clickNextButton();
+    // Page 5
+    await additionalform.fillTextBox(additional_details.dateTextbox, additional_details.date_occured);
+    await additionalform.addtionalForm2yesorno(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.organizationTextbox, additional_details.organization_name);
+    await additionalform.fillTextBox(additional_details.resolutionTextbox, additional_details.resolutionAns);
+    console.log('🎯 Form 2 page5 filled successfully!');
+    await additionalform.clickNextButton();
+    // Page 6
+    await additionalform.fillTextBox(additional_details.dateTextbox, additional_details.date_occured);
+    await additionalform.addtionalForm2yesorno(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.organizationTextbox, additional_details.organization_name);
+    await additionalform.fillTextBox(additional_details.resolutionTextbox, additional_details.resolutionAns);
+    console.log('🎯 Form 2 page6 filled successfully!');
+    await additionalform.clickNextButton();
+    // Page 7
+    await additionalform.fillTextBox(additional_details.dateTextbox, additional_details.date_occured);
+    await additionalform.addtionalForm2yesorno(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.organizationTextbox, additional_details.organization_name);
+    await additionalform.fillTextBox(additional_details.resolutionTextbox, additional_details.resolutionAns);
+    console.log('🎯 Form 2 page7 filled successfully!');
+    await additionalform.clickNextButton();
+    // // Page 8
+    await additionalform.fillTextBox(additional_details.crimeTextbox, additional_details.crime);
+    await additionalform.fillTextBox(additional_details.dateTextbox, additional_details.date_occured);
+    await additionalform.addtionalForm2yesorno(additional_details.select_yes);
+    await additionalform.fillTextBox(additional_details.organizationTextbox, additional_details.organization_name);
+    await additionalform.fillTextBox(additional_details.resolutionTextbox, additional_details.resolutionAns);
+    console.log('🎯 Form 2 page8 filled successfully!');
+    await page.waitForTimeout(4000);
+    await additionalform.clickSubmitButton();
+    console.log('🎯 Instagram Additional Harm Form 2 filled!');
+    await additionalform.clickNextAfterSubmit();
+    // Additional Damages Form
+    await additionalform.fillAdditionalDamagesForm();
+    await additionalform.clickSubmitButton();
+    await additionalform.clickNextAfterSubmit();
+    console.log('🎯 Additional Damages Form filled!');
+
+  });
+
+
+  test('Download the documents filled using reminder link and verify - Upload documents', async () => {
     await page.goto(reminder_link);
     const loginPage = new LoginPage(page);
     const db = new ConnectToDBPage(page);
+    const uploadDocument = new UploadPDF(page);
     const pdfUtils = new DownloadAndVerifyPDF(page);
+    const additionalform = new AdditionalHarmPage(page);
     await loginPage.closeCookieBanner();
     // **Download and Verify ACA Agreement**
-    const acaPath = await pdfUtils.downloadACAgreementFromReminderLink();
-    await pdfUtils.verifyPDFReminderLink(acaPath, sharedEmail);
+    const releasePath = await pdfUtils.downloadSignedReleaseAgreementReminder();
+    await pdfUtils.verifyPDF(releasePath);
+    await additionalform.clickNextAfterSubmit();
+    await uploadDocument.uploadDocuments();
+    console.log('🎯 Page 1 document upload successful');
+    await uploadDocument.uploadDocuments();
+    console.log('🎯 Page 2 document upload successful');
+    await uploadDocument.uploadDocuments();
+    console.log('🎯 Page 3 document upload successful');
 
-   
+
   });
 
   test('Reset Password and Login - from My Claim - Download the documents filled using reminder link and verify', async () => {
@@ -125,13 +313,10 @@ test.describe.serial('Reminder Link Test', () => {
     const accountPage = new MyAccountPage(page);
     await accountPage.goToMyClaim();
     await uploadDocument.viewCaseDetail();
-    // **Download and Verify Signed Release Agreement**
-    const releasePath = await pdfUtils.downloadSignedReleaseAgreement();
-    await pdfUtils.verifyPDFReminderLink(releasePath, sharedEmail);
 
     // **Download and Verify ACA Agreement**
-    const acaPath = await pdfUtils.downloadACAgreement();
-    await pdfUtils.verifyPDFReminderLink(acaPath, sharedEmail);
+    const releasePath = await pdfUtils.downloadSignedReleaseAgreement();
+    await pdfUtils.verifyPDF(releasePath);
 
     // **Download and Verify Reference Document Name**
     await pdfUtils.downloadReferenceDocument();
@@ -147,12 +332,12 @@ test.describe.serial('Reminder Link Test', () => {
     const pdfUtils = new DownloadAndVerifyPDF(page);
     const db = new ConnectToDBPage(page);
 
-    
+
     await loginPage.goto();
     await loginPage.signin(sharedEmail, lanternPassword);
 
     await mailinator.gotoLoginPage();
-   // await mailinator.login(mailinatorUsername, mailnatorPassword);
+    // await mailinator.login(mailinatorUsername, mailnatorPassword);
     await mailinator.searchEmail(sharedEmail);
 
     await mailinator.openOTPEmail();
@@ -163,7 +348,7 @@ test.describe.serial('Reminder Link Test', () => {
 
     const accountPage = new MyAccountPage(page);
     await accountPage.goToMyAccount();
-    await accountPage.validatePersonalDetails(testData.firstName, testData.lastName);
+    await accountPage.validatePersonalDetails(accData.firstName, accData.lastName);
     await accountPage.clickAddressDetails();
     await accountPage.validateAddressDetailSection();
     await accountPage.clickEditAddressButton();
@@ -210,6 +395,7 @@ test.describe.serial('Reminder Link Test', () => {
 
 
   test.afterEach(async ({ page }, testInfo) => {
+    testInfo.setTimeout(120000); 
     if (testInfo.status === 'passed') {
       console.log(`Test passed: ${testInfo.title}`);
     } else if (testInfo.status === 'failed') {
